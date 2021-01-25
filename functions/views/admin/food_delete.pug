@@ -1,0 +1,7 @@
+extends admin_base
+
+block content
+    h1 Xóa sản phẩm: #{food.title}
+    p Bạn có chắc muốn xóa sản phẩm này
+    form(method='POST' action='')
+        button.btn.btn-danger(type='submit') xóa

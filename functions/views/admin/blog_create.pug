@@ -1,0 +1,23 @@
+extends admin_base
+
+block content
+    h2.mb-4.mt-4=title
+
+    form(method='POST' action='')
+        div.form-group
+            label(for='title') Tiêu đề:
+            input#title.form-control(type='text', placeholder='Fantasy, Poetry etc.' name='title' value=(undefined === blog ? '' : blog.title))
+
+            label(for='summary') Tóm tắt:
+            input#summary.form-control(type='text', placeholder='Một món ăn dân gian, ...' name='summary' value=(undefined === blog ? '' : blog.summary))
+
+            label(for='content') Tóm tắt:
+            textarea#content.form-control(placeholder='Nội dung...' name='content', rows=10)=   (undefined === blog ? '' : blog.content)
+
+        button.btn.btn-primary(type='submit') Tạo
+
+
+    if errors
+        ul(style="color:red")
+            for error in errors
+                li!= error.msg

@@ -1,0 +1,36 @@
+extends admin_base
+
+
+block content
+    h2.mb-4.mt-4 #{title}
+    a(href="/admin/order/create").btn.btn-primary.mb-4 Tạo đơn hàng mới
+    table(style='width=100%')#order-list.display
+        thead
+            tr
+                th STT
+                th Tên người đặt
+                th SĐT
+                th Địa chỉ
+                th Trạng thái
+                th
+
+        tbody
+            for order,index in [1,1,1,1]
+                tr
+                    td=index + 1
+                    td=order.name
+                    td=order.email
+                    td=order.phone
+                    td=order.status
+                    td
+                        a(href=`/admin/order/${order.id}`) Chi tiết
+
+
+    p= error
+
+block script
+    script(src='//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js')
+    script.
+        $(document).ready(function () {
+            $('#order-list').DataTable();
+        });

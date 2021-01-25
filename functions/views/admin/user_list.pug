@@ -1,0 +1,31 @@
+extends admin_base
+
+block content
+    h2= title
+    table(style='width=100%')#user-list.display
+        thead
+            tr
+                th STT
+                th Tên
+                th Email
+                th SĐT
+                th
+        tbody
+            for user,index in users
+                tr
+                    td=index+1
+                    td=user.displayName
+                    td=user.email
+                    td=user.phoneNumber
+                    td
+                        a(href=`/admin/user/${user.uid}`) Chi tiết
+
+
+    p= error
+
+block script
+    script(src='//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js')
+    script.
+        $(document).ready(function () {
+            $('#user-list').DataTable();
+        });

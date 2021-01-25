@@ -1,0 +1,81 @@
+extends layout
+
+block content
+    .container
+        .row
+            .col-lg-3
+                h1.my-4 Shop Name
+                .list-group
+                    a.list-group-item(href='#') Ăn sáng
+                    a.list-group-item(href='#') Ăn trưa
+                    a.list-group-item(href='#') Ăn vặt
+            // /.col-lg-3
+            .col-lg-9
+                #carouselExampleIndicators.carousel.slide.my-4(data-ride='carousel')
+                    ol.carousel-indicators
+                        li.active(data-target='#carouselExampleIndicators' data-slide-to='0')
+                        li(data-target='#carouselExampleIndicators' data-slide-to='1')
+                        li(data-target='#carouselExampleIndicators' data-slide-to='2')
+                    .carousel-inner(role='listbox')
+                        .carousel-item.active
+                            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1575325952371-0ded5da744f1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='First slide')
+                        .carousel-item
+                            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1606851686066-c7f17f1ece96?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='Second slide')
+                        .carousel-item
+                            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1447078806655-40579c2520d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='Third slide')
+                    a.carousel-control-prev(href='#carouselExampleIndicators' role='button' data-slide='prev')
+                        span.carousel-control-prev-icon(aria-hidden='true')
+                        span.sr-only Previous
+                    a.carousel-control-next(href='#carouselExampleIndicators' role='button' data-slide='next')
+                        span.carousel-control-next-icon(aria-hidden='true')
+                        span.sr-only Next
+                .row
+                    for food,index in foods
+                        .col-lg-4.col-md-6.mb-4
+                            .card.h-100
+                                a(href=href=`/menu/${food.id}`)
+                                    //if food.image_url.length >= 0
+                                    //    //TODO Have image link
+                                    //    img.card-img-top(src=`${food.image_url}` alt='Ảnh món ăn')
+                                    //else
+                                    //    //don't have image link
+                                    //    img.card-img-top(src='https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&h400&q=80' alt='')
+                                    img.card-img-top(src='https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&h400&q=80' alt='')
+                                .card-body
+                                    h4.card-title
+                                        a(href=`/menu/${food.id}`)= food.title
+                                    h5= food.price+" VND"
+                                    p.card-text= food.description
+                                    //a.btn.btn-primary.mb-3(href=`/menu/${food.id}`) Chi tiết
+                                    btn.btn.btn-primary.add-to-cart(data-id=`${food.id}` data-title=`${food.title}`) Thêm vào giỏ
+                                .card-footer
+                                    small.text-muted ★ ★ ★ ★ ☆
+
+block script
+    script.
+        $(document).ready(function () {
+            $('.add-to-cart').each(
+                (index, element) => {
+                    $(element).click(function (e) {
+                        // alert(`${$(element).data('id')}`)
+                        const id = `${$(element).data('id')}`
+                        const title = `${$(element).data('title')}`
+                        // your statements;
+                        e.preventDefault()
+                        console.log(`id ${id}, title ${title}`)
+                        fetch(`/menu/add-to-cart?id=${id}&title=${title}`, {
+                            method: "POST"
+                        }).then(response => response.json())
+                            .then((data) => {
+                            console.log(`data ${data.cart_count}`);
+                            // console.log($("header ul").children()[3].val())
+                            // $("header ul").children()[3]
+                            $("#cart-count").text(data.cart_count)
+                        })
+                    })
+                }
+            );
+
+
+        });
+

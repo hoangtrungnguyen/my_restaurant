@@ -1,0 +1,25 @@
+- var link_class= ['nav-link']
+- var link_class_active = ['nav-link',"active"]
+header
+    nav.d-flex.navbar.navbar-expand-md.navbar-dark.fixed-top.bg-dark.justify-content-between
+        div
+            a.navbar-brand(href='#') LOGO
+        button.navbar-toggler(type='button' data-toggle='collapse' data-target='#navbarCollapse' aria-controls='navbarCollapse' aria-expanded='false' aria-label='Toggle navigation')
+            span.navbar-toggler-icon
+        #navbarCollapse.collapse.navbar-collapse
+            ul.navbar-nav.ml-auto
+                li.nav-item
+                a(class= `${title}` === "Trang chủ" ? link_class_active:link_class href='/')
+                    | Trang chủ
+                    span.sr-only (current)
+                li.nav-item
+                    a(class= `${title}` === "Thực đơn" ? link_class_active:link_class href='/menu') Thực đơn
+                li.nav-item
+                    a(class= `${title}` === "Blog" ? link_class_active:link_class href='/blog') Blog
+                li.nav-item
+                    a(class= `${title}` === "Giỏ hàng" ? link_class_active:link_class href='/cart')= `Giỏ hàng `
+                        span#cart-count
+                            if "cart_count" in session
+                                | #{session.cart_count}
+                            else
+                                |
