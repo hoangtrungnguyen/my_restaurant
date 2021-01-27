@@ -10,11 +10,11 @@ block content
         for food,index in foods
             .col-md-4.mb-5
                 .card.h-100
-                    //if food.image_url && food.image_url.length > 5
-                    //    img.card-img-top(src=`${food.image_url}` alt='Ảnh món ăn' width=500 height=300)
-                    //else
+                    if food.image_url && food.image_url.length > 5
+                        img.card-img-top(src=`${food.image_url}` alt='Ảnh món ăn' width=500 height=300)
+                    else
                         img.card-img-top(src=`http://placehold.it/500x300` alt='Ảnh món ăn')
-                    img.card-img-top(src=`http://placehold.it/500x300` alt='Ảnh món ăn')
+                    //img.card-img-top(src=`http://placehold.it/500x300` alt='Ảnh món ăn')
                     .card-body
                         h2.card-title= food.title
                         h6 #{food.price} VND
@@ -22,7 +22,7 @@ block content
                             |
                     .card-footer
                         a.btn.btn-primary.btn-sm(href='#') Chỉnh sửa
-                        a.btn.btn-danger.btn-sm.ml-4(href='#') Xóa
+                        a.btn.btn-danger.btn-sm.ml-4(href=`/admin/food/${food.id}/delete`) Xóa
 
 
 

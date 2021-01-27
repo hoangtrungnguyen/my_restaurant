@@ -1,5 +1,5 @@
 const express = require('express');
-const multer = require('multer')
+const Multer = require('multer')
 const router = express.Router();
 // Require our controllers.
 const food_controller = require('../controller/foodController');
@@ -14,38 +14,30 @@ router.get('/', ((req, res) => {
 
 
 // users Routes ///
-router.get('/user',user_controller.user_list)
-router.get('/user/:id',user_controller.user_detail)
-router.post('/user/:id/update',user_controller.user_update_post)
-router.get('/user/:id/delete',user_controller.user_delete_get)
-router.post('/user/:id/delete',user_controller.user_delete_post)
+router.get('/user', user_controller.user_list)
+router.get('/user/:id', user_controller.user_detail)
+router.post('/user/:id/update', user_controller.user_update_post)
+router.get('/user/:id/delete', user_controller.user_delete_get)
+router.post('/user/:id/delete', user_controller.user_delete_post)
 
 
 /// food ROUTES ///
 
 
-
 // GET request for creating a Book. NOTE This must come before routes that display Book (uses id).
 router.get('/food/create', food_controller.food_create_get);
 
-
-// SET STORAGE
-const storage = multer.diskStorage({
-    destination: async function (req, file, cb) {
-        cb(null, 'uploads')
-        // await
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-})
-
-const upload = multer({dest: "uploads", storage: storage})
-
 //TODO thêm chức năng đẩy lên firestore
+const multer = Multer({
+    // dest:"../uploads",
+    storage: Multer.memoryStorage(),
+    limits: {
+        fileSize: 1024 * 1024 // no larger than 1mb, you can change as needed.
+    }
+});
 
 // POST request for creating Book.
-router.post('/food/create', food_controller.food_create_post);
+router.post('/food/create', multer.single('file'), food_controller.food_create_post);
 
 // GET request to delete Book.
 router.get('/food/:id/delete', food_controller.food_delete_get);
@@ -91,7 +83,6 @@ router.get('/blog/:id', blog_controller.blog_detail);
 
 // GET request for list of all Book items.
 router.get('/blog', blog_controller.blog_list);
-
 
 
 /// orders Routes ///

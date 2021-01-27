@@ -1,0 +1,10 @@
+extends ./admin/admin_base
+
+block content
+    .container-fluid.pt-4
+        form(method='POST' action='' enctype="multipart/form-data")
+            div.form-group
+                label(for='file') File:
+                input#file.form-control(type='file', placeholder='Fantasy, Poetry etc.' name='file')
+
+            button.btn.btn-primary(type='submit') Tạo

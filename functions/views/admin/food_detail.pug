@@ -3,3 +3,8 @@ extends admin_base
 
 block content
     h1= `Sản phẩm ${food.name}`
+    p Số sản phẩm đã bán: 100
+    p Số suất còn lại trong ngày: 5
+
+
+    a.btn.btn-danger(href=`/food/${food.id}/delete`) Xóa sản phẩm

@@ -1,11 +1,17 @@
-function Order(title,price,description){
-    this.id =  Date.now().toString()
-    this.title = title
-    this.price = price
-    this.image_url = ''
-    this.description = description
+const Food = require("./food");
 
-    this.status = ''
+function Order() {
+    this.id = Date.now().toString()
+    this.food = new Map()
+    this.count = 0
+    this.note = ""
+    this.phone = "NaN"
+    this.full_name = ""
+    this.billCount = billCount
+
+    function billCount() {
+        return parseInt(this.food.price) * this.count
+    }
 }
 
 module.exports = Order

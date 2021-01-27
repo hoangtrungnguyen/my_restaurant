@@ -12,10 +12,13 @@ router.get('', user_controller.index);
 
 router.get('/menu', food_controller.menu);
 router.get('/menu/:id', food_controller.menu_item);
-//no refresh page
-router.post("/menu/add-to-cart",food_controller.add_to_cart)
 
+
+
+//no refresh page
+router.post("/menu/add-to-cart",order_controller.add_to_cart)
 router.get("/cart",order_controller.cart)
+router.post("/cart/submit",order_controller.submit_order)
 
 
 

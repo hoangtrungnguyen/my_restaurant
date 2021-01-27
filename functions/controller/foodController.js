@@ -1,7 +1,15 @@
 const Food = require("../model/food")
 const admin = require('firebase-admin')
 const async = require('async');
-const {body, validationResult} = require("express-validator");
+const {Storage} = require('@google-cloud/storage');
+const Multer = require('multer');
+const {v4: uuidv4} = require('uuid');
+const uuid = uuidv4();
+
+// Creates a client
+const storage = new Storage();
+
+const bucket = storage.bucket("restaurant-56248.appspot.com");
 
 
 exports.menu = function (req, res) {
@@ -10,6 +18,7 @@ exports.menu = function (req, res) {
         const foods = value.docs.map((doc) => {
             let food = new Food()
             food.id = doc.id
+            food.image_url = doc.data().image_url
             food.title = doc.data().title
             food.price = doc.data().price
             food.description = doc.data().description
@@ -23,27 +32,6 @@ exports.menu_item = (req, res) => {
     res.render('menu_item', {title: 'Menu Item'});
 }
 
-exports.add_to_cart = (req, res) => {
-    const foodId = req.query.id
-    const title = req.query.title
-    console.log(`foodId ${foodId}, title ${title}`)
-
-    // adding id to session
-    if (req.session.cart) {
-        req.session.cart_count +=1
-        req.session.cart[foodId] += 1
-    } else {
-        req.session.cart = {}
-        req.session.cart[foodId] = 1
-        req.session.cart_count = 1
-    }
-    // next()
-    console.log(`Session cart_count ${req.session.cart_count}`)
-    res.send({
-        cart_count: req.session.cart_count
-    })
-}
-
 
 /// Admin food list ///
 exports.food_list = function (req, res) {
@@ -52,7 +40,17 @@ exports.food_list = function (req, res) {
 
     const db = admin.firestore();
     db.collection('food').get().then((value) => {
-        const foods = value.docs.map(doc => doc.data());
+        const foods = value.docs.map((doc) => {
+            let food = new Food(
+                doc.data().title,
+                doc.data().price,
+                doc.data().description
+            )
+
+            food.image_url = doc.data().image_url
+            food.id = doc.id
+            return food
+        });
         res.render('admin/food_list', {foods: foods, error: null, title: "Danh sách sản phẩm"})
         // res.send(result);
     }).catch((error) => {
@@ -71,37 +69,30 @@ exports.food_create_get = function (req, res) {
 };
 
 
-
 // Handle Food create on POST.
+
+// const multer = Multer({
+//     // dest:"../uploads",
+//     storage: Multer.memoryStorage(),
+//     limits: {
+//         fileSize: 1024 * 1024 // no larger than 1mb, you can change as needed.
+//     }
+// });
+
+
 exports.food_create_post = [
     // Validate and santise the name field.
-    body('title', 'Phải có tiêu đề').trim().isLength({min: 1}).escape(),
-    body('price', 'Phải có giá sản phẩm').isNumeric().escape(),
-    body('description', 'Phải có nội dung').trim().isLength({min: 1}).escape(),
-
+    // multer.single('image'),
     // Process request after validation and sanitization.
     (req, res, next) => {
-        // Extract the validation errors from a request.
-        const errors = validationResult(req);
 
+        console.debug("Validate input")
+        // const errors = validationResult(req);
+        let errors = []
+        if (req.body.title.trim().length < 1) {
+            errors.push(Error("Tiêu đề không được để trống"))
+        }
 
-        console.log('Upload Image');
-
-
-        //TODO upload image from image field
-
-        // let file = req.file;
-        // if (file) {
-        //     uploadImageToStorage(file).then((success) => {
-        //         res.status(200).send({
-        //             status: 'success'
-        //         });
-        //     }).catch((error) => {
-        //         console.error(error);
-        //     });
-        // }
-
-        const image_url = req.body.image
 
         // Create a genre object with escaped and trimmed data.
         let food = new Food(
@@ -110,35 +101,77 @@ exports.food_create_post = [
             req.body.description,
         )
 
-        food.image_url = image_url
-
         //CHecking if title or content is empty
-        if (!errors.isEmpty()) {
-            // There are errors. Render the form again with sanitized values/error messages.
+        if (errors.length > 0) {
+            console.debug('Redirect if errors occurs');
             res.render('admin/food_create', {
                 title: 'Tạo blog',
                 food: food,
-                errors: errors.array()
+                errors: errors
             });
             return;
         }
 
+        let image = req.file;
+        const buffer = req.file.buffer
 
-        //insert to firestore
-        const db = admin.firestore();
-
+        const db = admin.firestore()
         async.waterfall([
-            async (callback) => {
+            async () => {
+                console.debug('Upload image')
+                const image_url = await new Promise((resolve, reject) => {
+                    let newFileName =  image.originalname;
+
+                    let fileUpload = bucket.file(newFileName);
+
+                    fileUpload.save(buffer)
+
+                    console.debug(`UUID ${uuid}`)
+                    //TODO fix can not generate download id token
+                    const blobStream = fileUpload.createWriteStream({
+                        metadata: {
+                            metadata: {
+                                firebaseStorageDownloadTokens: uuid,
+                            },
+                            contentType: image.mimeType,
+                            cacheControl: 'public, max-age=31536000',
+                        }
+                    });
+
+                    blobStream.on('error', (error) => {
+                        console.debug(error)
+                        reject('Something is wrong! Unable to upload at the moment.');
+                    });
+
+                    blobStream.on('finish', () => {
+                        //TODO fix url download can not access
+
+                        // The public URL can be used to directly access the file via HTTP.
+                        // const url = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`
+                        //return url in the future when finish
+                        const url = "https://firebasestorage.googleapis.com/v0/b/" + bucket.name + "/o/" + newFileName + "?alt=media&token=" + uuid
+
+                        resolve(url);
+                        // resolve(image_url);
+                    });
+
+                    blobStream.end(buffer);
+                })
+                console.debug("Uploaded image's url ", image_url)
+                return image_url
+            },
+            async (image_url, callback) => {
                 await db.collection('food').doc(food.id).set(
                     {
                         title: food.title,
                         price: food.price,
                         description: food.description,
-                        image_url: food.image_url
+                        image_url: image_url
                     }, {
                         merge: true
                     }
                 )
+
                 return "Done"
             }
         ], (err, result) => {
@@ -157,7 +190,8 @@ exports.food_create_post = [
 
 // Display Author delete form on GET.
 exports.food_delete_get = function (req, res) {
-    res.send('NOT IMPLEMENTED: Author delete GET');
+    const food = {}
+    res.render("admin/food_delete", {title: "Xóa sản phẩm", food: food})
 };
 
 // Handle Author delete on POST.

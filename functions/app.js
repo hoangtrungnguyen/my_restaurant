@@ -29,6 +29,7 @@ const indexRouter = require('./routes');
 // const blogRouter = require('./routes/blog');
 const adminRouter = require('./routes/admin');
 const foodRouter = require('./routes/order');
+const testRouter = require('./routes/upload');
 
 
 //set up using for index
@@ -43,7 +44,15 @@ app.set('view engine', 'pug');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: true}));
+
+let isMultipart = /^multipart\//i;
+let urlencodedMiddleware = bodyParser.urlencoded({ extended: true });
+app.use(function (req, res, next) {
+    let type = req.get('Content-Type');
+    if (isMultipart.test(type)) return next();
+    return urlencodedMiddleware(req, res, next);
+});
 
 app.use(cookieParser());
 
@@ -71,6 +80,7 @@ app.use(function(req,res,next){
 /* using router */
 app.use('/', indexRouter);
 app.use('/admin', adminRouter);
+app.use('/test', testRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -90,7 +100,7 @@ app.use(function (err, req, res, next) {
 
 exports.app = functions.https.onRequest(app);
 
-// module.exports = app
+module.exports = app
 
 
 

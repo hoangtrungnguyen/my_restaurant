@@ -11,18 +11,18 @@ block content
                         h3 Hãy thêm một số món hàng
                         a.btn.btn-primary(href="/menu") Tiếp tục mua sắm
 
-                for key,values in order_items
+                for order in order_items
                     .card.mb-4
                         img.card-img-top(src='https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=750&h=350&q=80' alt='Card image cap' width=750 height=300)
                         .card-body
-                            h2.card-title= key
-                            p.card-text=`200.000VND / suất`
-                            p.card-text= "Mô tả ngắn"
+                            h2.card-title= order.food.title
+                            p.card-text #{order.food.price} VND/suất
+                            p.card-text= order.food.description
                             label Ghi chú:
                             textarea.form-control(type='text' name='note' placeholder="VD: Ít ớt")
                             .card-text.row.justify-content-end.pt-3
                                 btn.btn.btn-primary(style="width:80px") -
-                                span.pl-3.pr-3.align-self-center 2
+                                span.pl-3.pr-3.align-self-center= order.order.count
                                 btn.btn.btn-primary(style="width:80px") +
                         //.card-footer.text-muted
 
@@ -33,25 +33,30 @@ block content
                         h5.card-header Tóm tắt đơn hàng
                         .card-body
                             h6.card-subtitle Thành tiền:
-                            p.pl-3.card-text 100.000 VND
+                            p.pl-3.card-text= totalPrice + " VND"
                             h6.card-subtitle Thời gian vận chuyển:
                             p.pl-3.card-text 22:00 phút
                                 small (dự kiến)
                     .card.my-4
                         h5.card-header Thông tin khách hàng
                         .card-body
-                            form.form-group(method="POST")
-                                label(for='fullName') Họ và tên:
-                                input#fullName.form-control(type='text' name='fullName' required)
-                                label(for='phone') Số điện thoại:
-                                input#phone.form-control(type='phone' name='phone' required)
-                                label(for='address') Địa chỉ:
-                                input#address.form-control(type='text' name='address' required)
-                                label(for='email') Email:
-                                input#email.form-control(type='email' name='email')
-                                btn.btn.btn-primary.mt-4(style="width:100%")
+                            form#submit-form(method="POST" action="/cart/submit")
+                                div.form-group
+                                    label(for='fullName') Họ và tên:
+                                    input#fullName.form-control(type='text' name='fullName' required)
+                                    label(for='phone') Số điện thoại:
+                                    input#phone.form-control(type='phone' name='phone' required)
+                                    label(for='address') Địa chỉ:
+                                    input#address.form-control(type='text' name='address' required)
+                                    label(for='email') Email:
+                                    input#email.form-control(type='email' name='email')
+                                button.btn.btn-primary.mt-4(style="width:100%" type="submit")
                                     | Xác nhận
 
+                            if submit_errors
+                                ul(style="color:red")
+                                    for error in submit_errors
+                                        li!= error.msg
 
                         //btn.btn.btn-primary.mt-4(style="width:100%")
                         //    | Xác nhận
