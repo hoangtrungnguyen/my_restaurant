@@ -1,0 +1,61 @@
+extends admin_base
+
+block content
+    h2 #{title}
+    p Tổng giá trị đơn hàng:  #{total_bill} VND
+    form(method='POST' action='/admin/order/#{order.id}/update')
+        div.form-group
+            label(for='full_name') Người đặt:
+            input#full_name.form-control(readonly=true type='text', placeholder='Tên người đặt' name='full_name' value=(undefined === order ? '' : order.full_name))
+
+            label(for='phone') SĐT:
+            input#phone.form-control(readonly=true type='text', placeholder='Một món ăn dân gian, ...' name='phone' value=(undefined === order ? '' : order.phone))
+
+            label(for='address') Địa chỉ:
+            textarea#address.form-control(placeholder='Địa chỉ...' name='address', rows=3)=  (undefined === order ? '' : order.address)
+
+            label(for='note') Lưu ý của khách hàng:
+            textarea#note.form-control(placeholder='Nội dung...' name='note', rows=5)=   (undefined === order ? '' : order.note)
+
+            label(for='status') Trạng thái:
+            select#status.form-control(name='status')
+                option(value="WAITING" selected= order.status === "WAITING" )=`Đang chờ`
+                option(value="COOKING" selected= order.status === "COOKING" )=`Đang chuẩn bị`
+                option(value="SHIPPING" selected=order.status === "SHIPPING")=`Đang giao hàng`
+                option(value="COMPLETE" selected=order.status === "COMPLETE")=`Hoàn thành`
+                option(value="CANCEL" selected=order.status === "CANCEL")=`Đơn bị hủy`
+    hr
+    h4 Danh sách món ăn được đặt
+    table#foods_in_order(style='width=100%').display
+        thead
+            tr
+                th(width="15") STT
+                th Tên món ăn
+                th Số lượng
+                th Ghi chú của khách hàng
+                th Toppings (Đồ ăn kèm)
+        tbody
+            for food,index in order.foods
+                tr
+                    td(width="15")=index + 1
+                    td
+                        a(href=`/admin/food/${food.food_id}`) #{food.food_name}
+                    td=food.count
+                    td=food.note
+                    td=food.toppings
+
+    .py-5.px-0
+        button.btn.btn-primary.mx-4 Cập nhật đơn hàng
+        a.btn.btn-danger.mx-4(href=`/admin/order/${order.id}/delete`) Xóa đơn hàng
+
+    if errors
+        ul(style="color:red")
+            for error in errors
+                li!= error.msg
+
+block script
+    script(src='//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js')
+    script.
+        $(document).ready(function () {
+            $('#foods_in_order').DataTable();
+        });

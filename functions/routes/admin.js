@@ -27,7 +27,6 @@ router.post('/user/:id/delete', user_controller.user_delete_post)
 // GET request for creating a Book. NOTE This must come before routes that display Book (uses id).
 router.get('/food/create', food_controller.food_create_get);
 
-//TODO thêm chức năng đẩy lên firestore
 const multer = Multer({
     // dest:"../uploads",
     storage: Multer.memoryStorage(),
@@ -56,6 +55,12 @@ router.get('/food/:id', food_controller.food_detail);
 
 // GET request for list of all Book items.
 router.get('/food', food_controller.food_list);
+
+
+/// topping routes ///
+router.get('/topping/create',food_controller.topping_create_get)
+router.post('/topping/create',food_controller.topping_create_post)
+
 
 
 /// blog Routes ///

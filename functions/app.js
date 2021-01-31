@@ -1,5 +1,6 @@
 //set up package
 const functions = require("firebase-functions");
+
 const admin = require('firebase-admin')
 // Imports the Google Cloud client library
 const {Storage} = require('@google-cloud/storage');
@@ -8,19 +9,22 @@ const express = require("express"),
     flash = require('connect-flash'),
     session = require('express-session'),
     toastr = require('express-toastr');
+
 const bodyParser = require('body-parser');
 const engines = require("consolidate")
 const path = require('path')
 const logger = require('morgan');
 const createError = require('http-errors');
 const cookieParser = require('cookie-parser');
-
+const cors = require('cors')({origin: true});
+const FirebaseStore = require('connect-session-firebase')(session);
 const pug = require('pug')
 
 const serviceAccount = require('./restaurant-56248.json');
 //
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+const ref = admin.initializeApp({
+    databaseURL: 'https://restaurant-56248-default-rtdb.firebaseio.com/',
+    credential: admin.credential.cert('./restaurant-56248.json')
 });
 
 
@@ -47,20 +51,29 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 let isMultipart = /^multipart\//i;
-let urlencodedMiddleware = bodyParser.urlencoded({ extended: true });
+let urlencodedMiddleware = bodyParser.urlencoded({extended: true});
 app.use(function (req, res, next) {
     let type = req.get('Content-Type');
     if (isMultipart.test(type)) return next();
     return urlencodedMiddleware(req, res, next);
 });
 
-app.use(cookieParser());
-
 app.use(session({
-    secret: 'secret',
+    store: new FirebaseStore({
+        database: ref.database()
+    }),
+    name: '__session',
+    secret: 'keyboard cat',
+    resave: true,
     saveUninitialized: true,
-    resave: true
+    cookie: {
+        maxAge: 600000,
+        secure: false,
+        httpOnly: false
+    }
 }));
+// app.use(validateFirebaseIdToken);
+app.use(cors);
 
 app.use(flash());
 
@@ -72,7 +85,7 @@ app.use(toastr());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //session access
-app.use(function(req,res,next){
+app.use(function (req, res, next) {
     res.locals.session = req.session;
     next();
 });
@@ -100,7 +113,9 @@ app.use(function (err, req, res, next) {
 
 exports.app = functions.https.onRequest(app);
 
-module.exports = app
+
+//comment before deploy
+// module.exports = app
 
 
 

@@ -1,39 +1,50 @@
 extends layout
 
 block content
+    // This page design following this example
+    //https://www.bootdey.com/snippets/view/shopping-cart-checkout#css
+    link(href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet")
+    link(rel='stylesheet', href='/stylesheets/cart.css')
 
-    .container
-        .row
-            .col-md-8
-                h1.my-4.pb-4 Giỏ hàng
-                if (order_items.length < 1)
-                    .col.justify-content-center
-                        h3 Hãy thêm một số món hàng
-                        a.btn.btn-primary(href="/menu") Tiếp tục mua sắm
+    style.
+        .card-horizontal {
+            display: flex;
+            flex: 1 1 auto;
+        }
 
-                for order in order_items
-                    .card.mb-4
-                        img.card-img-top(src='https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?auto=format&fit=crop&w=750&h=350&q=80' alt='Card image cap' width=750 height=300)
-                        .card-body
-                            h2.card-title= order.food.title
-                            p.card-text #{order.food.price} VND/suất
-                            p.card-text= order.food.description
-                            label Ghi chú:
-                            textarea.form-control(type='text' name='note' placeholder="VD: Ít ớt")
-                            .card-text.row.justify-content-end.pt-3
-                                btn.btn.btn-primary(style="width:80px") -
-                                span.pl-3.pr-3.align-self-center= order.order.count
-                                btn.btn.btn-primary(style="width:80px") +
-                        //.card-footer.text-muted
+        hr {
+            background-color: black;
+        }
+    input(type='hidden' name="cart_count_input_holder")
+    .container.p-0
+        h1 Giỏ hàng
+    if (order_items.length < 1)
+        .container-fluid.m-auto.pt-4
+            .d-flex.flex-column.m-auto.justify-content-center
+                h4.align-self-center Hãy thêm một số món hàng
+                a.btn.btn-primary.w-25.align-self-center(href="/menu") Tiếp tục mua sắm
 
-            // Sidebar Widgets Column
-            if (order_items.length !== 0)
-                .col-md-4
-                    .card.my-4
+    if (order_items.length >= 1)
+        .container.mt-4
+            .row
+                // cart details
+                .col-md-8
+                    .inbox
+                        .ibox-title
+                            span.pull-right
+                                | (
+                                strong#order_count_in_cart #{session.cart_count}
+                                | ) đơn
+                            h5 Số lượng đơn hàng
+                        for item in order_items
+                            include order/item
+                //side menu
+                .col-md-4.pt-4.pt-md-0
+                    .card
                         h5.card-header Tóm tắt đơn hàng
                         .card-body
                             h6.card-subtitle Thành tiền:
-                            p.pl-3.card-text= totalPrice + " VND"
+                            p#total-order-bill.pl-3.card-text= formatBill(totalPrice) + " VND"
                             h6.card-subtitle Thời gian vận chuyển:
                             p.pl-3.card-text 22:00 phút
                                 small (dự kiến)
@@ -50,13 +61,184 @@ block content
                                     input#address.form-control(type='text' name='address' required)
                                     label(for='email') Email:
                                     input#email.form-control(type='email' name='email')
-                                button.btn.btn-primary.mt-4(style="width:100%" type="submit")
+                                button#btn-submit-order.btn.btn-primary.mt-4(style="width:100%" type="submit")
                                     | Xác nhận
-
                             if submit_errors
                                 ul(style="color:red")
                                     for error in submit_errors
                                         li!= error.msg
+    div(style="")
+        include partials/modal
 
-                        //btn.btn.btn-primary.mt-4(style="width:100%")
-                        //    | Xác nhận
+block script
+    link(rel='stylesheet', href='/js/alert-dialog/src/css/bootstrap-alert.css')
+    script(src='/js/alert-dialog/src/js/bootstrap-alert.js')
+    script.
+        $(document).ready(() => {
+            $("#btn-submit-order").click((e) => {
+                console.log("CLICKED")
+                // fetch(
+                //     "/cart/submit",
+                //     {
+                //         method: "POST",
+                //         body: JSON.stringify({
+                //
+                //             displayName: $('#fullName').val(),
+                //             phoneNumber: $('#phone').val(),
+                //             email: $('#email').val(),
+                //             address: $('#address').val(),
+                //         })
+                //
+                //     }
+                // ).then(data => {
+                //
+                // })
+            })
+
+            $(".remove-item").each(
+                (index, el) => {
+                    $(el).on('click', (e) => {
+                        const foodId = `${$(el).data('id')}`
+                        e.preventDefault()
+                        fetch(`/cart/remove-an-order`, {
+                            method: "POST",
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                orderId: foodId,
+                            })
+                        }).then(response => response.json())
+                            .then(response => {
+                                if (response.cart_count == 0) {
+                                    window.location.replace("/menu")
+                                    return
+                                }
+                                $("#cart-count").text(response.cart_count)
+                                $("#order_count_in_cart").text(response.cart_count)
+                                $(`.ibox-content[data-id="${foodId}"]`).remove()
+                            }).catch((error) => {
+                            alert(error)
+                        })
+                    })
+                }
+            )
+
+            //handle change quantity of the food items
+            $(".food-quantity").each(
+                (index, element) => {
+                    const foodId = `${$(element).data('id')}`
+                    const orderId = `${$(element).data('orderid')}`
+
+                    $(element).change(() => {
+
+                        const count = $(element).val()
+                        // console.log(`foodId ${foodId}, count ${count}, orderId ${orderId}`)
+                        $(element).prop('disabled', true)
+
+                        //remove if quantity === 0
+                        if (count == 0) {
+                            fetch(`/cart/remove-an-order`, {
+                                method: "POST",
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    orderId: orderId,
+                                })
+                            }).then(response => response.json())
+                                .then(response => {
+                                    if (response.cart_count == 0) {
+                                        window.location.replace("/menu")
+                                        return
+                                    }
+                                    $(`.ibox-content[data-id="${orderId}"]`).remove()
+                                    $("#cart-count").text(response.cart_count)
+                                    $("#order_count_in_cart").text(response.cart_count)
+
+
+                                }).catch((error) => {
+                                console.log(error)
+                                alert(error)
+                                window.location.replace("/menu")
+
+                            })
+                            return;
+                        }
+
+                        // set count for this order
+                        fetch(`/cart/set-quantity`, {
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            method: "POST",
+                            body: JSON.stringify({
+                                foodId: foodId,
+                                orderId: orderId,
+                                count: count
+                            })
+                        }).then((response) => response.json())
+                            .then(response => {
+                                const totalFoodBill = $(`.food-total-bill[data-orderid=${orderId}]`)
+                                totalFoodBill.text(formatBill(response.order_bill) + "VND")
+                                const count = response.cart_count
+                                $("#cart-count").text(count)
+                                $("#order_count_in_cart").text(count)
+                                $('input[name="cart_count_input_holder"]').val(count)
+                                $("#total-order-bill").text(formatBill(response["total_order_bill"]) + "VND")
+
+                                $(element).prop('disabled', false)
+                            }).catch((err) => {
+                            console.log(err)
+                            // alert("Lỗi xảy ra")
+                            // window.location.replace("/menu")
+                        })
+
+
+                    })
+                }
+            )
+
+            //Handle adding note for each item
+            $(".ibox-content").each(
+                (index, element) => {
+                    const orderId = `${$(element).data('id')}`
+                    $(element).find(".order-note").click((e) => {
+                        $('#noteModal').modal('show')
+                        $('#noteModal button[type="submit"]').click((e) => {
+                            const note = $("#note-text").val()
+                            console.log("Note " + note, "OrderId " + orderId)
+                            e.preventDefault()
+                            fetch('/cart/set-note', {
+                                method: "POST",
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    orderId: orderId,
+                                    note: note
+                                })
+                            }).then(response => response.json())
+                                .then(response => {
+                                $(element).find(".note").text(response["note"])
+                                $(element).find('.order-note').text('Sửa ghi chú')
+                            }).catch(err => {
+                                console.log(err)
+                            })
+
+                        })
+                    })
+                }
+            )
+
+            // $('#noteModal').on('hide.bs.modal', function () {
+            //     console.log('message : ' + $("#note-text").val());
+            // })
+
+
+        })
+

@@ -1,0 +1,99 @@
+extends ../layout
+
+block content
+    .container
+        h2.my-4 Thực đơn > #{name}
+        .row
+            .col-md-8
+                img.img-fluid(src='http://placehold.it/750x500' alt='')
+            .col-md-4
+                h5.py-4 Thêm topping
+                form#add-topping.px-4
+                    each topping in toppings
+                        .row.justify-content-between
+                            span
+                                input.topping-checkbox(type="checkbox" data-id=`${topping.id}` data-price=`${topping.price}` data-name=`${topping.name}`)
+                                label(for=`${topping}`).px-2 #{topping.name}
+                            p +#{formatBill(topping.price)}VND
+
+
+                    button#btn-add-to-cart.btn.btn-primary.w-100.my-3
+                        .row.justify-content-between.px-4
+                            span#bill #{formatBill(food_price)}VND
+                            span Thêm vào giỏ hàng
+
+                input#bill-data(hidden=true data-price=`${food_price}`)
+                input#food-name(hidden=true data-name=`${name}`)
+                input#food-id(hidden=true data-id=`${food_id}`)
+                input#food-price(hidden=true data-price=`${food_price}`)
+
+block script
+
+    script.
+        $(document).ready(function () {
+            var bill = $("#bill-data").data('price')
+            $(".topping-checkbox").each((index, el) => {
+                $(el).change(() => {
+                    var billTag = $("#bill")
+
+                    const isChecked = $(el).is(":checked")
+                    const topping_price = $(el).data('price')
+                    console.log('price ' + topping_price)
+                    console.log('bill ' + bill)
+                    // console.log(typeof topping_price)
+                    if (isChecked) {
+                        bill += topping_price
+                    } else {
+                        bill -= topping_price
+                    }
+                    billTag.data('foodPrice', bill)
+                    billTag.text(formatBill(bill) + "VND")
+                })
+
+            })
+
+            $("#btn-add-to-cart").click((e) => {
+                const food_name = $("#food-name").data('name')
+                const food_id = $("#food-id").data('id')
+                const food_price = $("#food-price").data('price')
+                e.preventDefault()
+                var toppings = []
+                $(".topping-checkbox").each((index, el) => {
+                    const checkBox = $(el)
+                    const isChecked = checkBox.is(":checked")
+                    if (isChecked) {
+                        toppings.push({
+                            topping_id: checkBox.data('id'),
+                            topping_name: checkBox.data('name'),
+                            topping_price: checkBox.data('price')
+                        })
+                    }
+                })
+                console.log(
+                    `ID ${food_id}`,
+                    `Name ${food_name}`,
+                    `Price ${food_price}`,
+                    `Toppings ${toppings}`)
+
+                fetch(`/menu/add-to-cart?title=${food_name}&price=${food_price}`, {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        foodId: food_id,
+                        toppings: toppings
+                    })
+                }).then(response => {
+                    if (response.status == 200) {
+                        window.location.href = '/menu'
+                    }
+
+                })
+            })
+
+        })
+
+
+

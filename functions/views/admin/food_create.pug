@@ -7,7 +7,7 @@ block content
         div.form-group
             //label(for='image') Ảnh:
             //input#image.form-control(type='file' name='image' alt="Submit" width="48" height="48")
-            label(for='file') Ảnh:
+            label(for='file') Ảnh (nhỏ hơn 1Mb):
             input#file.form-control(type='file' name='file' alt="Submit")
 
             label(for='title') Tiêu đề:
@@ -16,8 +16,8 @@ block content
             label(for='price') Giá sản phẩm:
             input#price.form-control(type='number', placeholder='VD: 10000' name='price' value=(undefined === food ? '' : food.price))
 
-            label(for='description') Mô tả:
-            textarea#description.form-control(placeholder='Nội dung...' name='description', rows=10)=   (undefined === food ? '' : food.description)
+            label(for='description') Mô tả ngắn:
+            textarea#description.form-control(placeholder='Nội dung...' name='description', rows=5, maxlength=200)=   (undefined === food ? '' : food.description)
 
         button.btn.btn-primary(type='submit') Tạo
 

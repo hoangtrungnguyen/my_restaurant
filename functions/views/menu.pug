@@ -34,10 +34,9 @@ block content
                         .col-lg-4.col-md-6.mb-4
                             .card.h-100
                                 //p= food.image_url
-                                a(href=href=`/menu/${food.id}`)
+                                a(href=href = `/menu/${food.id}`)
                                     if food.image_url && food.image_url.length > 5
-                                        //TODO Have image link
-                                        img.card-img-top(src=`${food.image_url}` alt='Ảnh món ăn')
+                                        img.card-img-top(src=`${food.image_url}` alt='Ảnh món ăn' width=350 height=200)
                                     else
                                         //don't have image link
                                         img.card-img-top(src='https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?&ixlib=rb-1.2.1&auto=format&fit=crop&w=700&h400&q=80' alt='')
@@ -45,10 +44,19 @@ block content
                                 .card-body
                                     h4.card-title
                                         a(href=`/menu/${food.id}`)= food.title
-                                    h5= food.price+" VND"
+                                    h5= formatBill(food.price) + " VND"
                                     p.card-text= food.description
                                     //a.btn.btn-primary.mb-3(href=`/menu/${food.id}`) Chi tiết
-                                    btn.btn.btn-primary.add-to-cart(data-id=`${food.id}` data-title=`${food.title}`) Thêm vào giỏ
+                                    .col.p-0
+                                        a.col-md-6.btn.custom-food.border.border-primary.rounded.font-10(
+                                            href=`/menu/topping/${food.id}/${food.title}/${food.price}`) Tùy chọn
+                                        button.col-md-6.btn.btn-primary.add-to-cart.m-auto.font-10(
+                                            data-id=`${food.id}`
+                                            data-title=`${food.title}`
+                                            data-clicked=false
+                                            data-price=food.price) Chọn
+
+
                                 .card-footer
                                     small.text-muted ★ ★ ★ ★ ☆
 
@@ -57,22 +65,42 @@ block script
         $(document).ready(function () {
             $('.add-to-cart').each(
                 (index, element) => {
+                    const btn = $(element);
                     $(element).click(function (e) {
                         // alert(`${$(element).data('id')}`)
                         const id = `${$(element).data('id')}`
                         const title = `${$(element).data('title')}`
-                        // your statements;
+                        const price = `${$(element).data('price')}`
+                        const isClicked = $(element).data('clicked')
+                        console.log(isClicked)
                         e.preventDefault()
-                        console.log(`id ${id}, title ${title}`)
-                        fetch(`/menu/add-to-cart?id=${id}&title=${title}`, {
-                            method: "POST"
+                        if (isClicked) {
+                            window.location.href = '/cart'
+                            return
+                        }
+                        // your statements;
+
+                        console.log(`id ${id}, title ${title}, price ${price}`)
+
+                        fetch(`/menu/add-to-cart?title=${title}&price=${price}`, {
+                            method: "POST",
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                foodId:id
+                            })
                         }).then(response => response.json())
                             .then((data) => {
-                            console.log(`data ${data.cart_count}`);
-                            // console.log($("header ul").children()[3].val())
-                            // $("header ul").children()[3]
-                            $("#cart-count").text(data.cart_count)
-                        })
+                                console.log(`data ${data.cart_count}`);
+                                // console.log($("header ul").children()[3].val())
+                                // $("header ul").children()[3]
+                                $("#cart-count").text(data.cart_count)
+                                btn.text("Giỏ hàng")
+                                btn.css('background-color', 'gray');
+                                btn.data("clicked", true)
+                            })
                     })
                 }
             );

@@ -24,6 +24,7 @@ html
 
 
     body
+        - function formatBill(bill){return  new Intl.NumberFormat('vi-VI', { maximumSignificantDigits: 3 }).format(bill)}
         .d-flex#wrapper
             include widgets/side_bar
             //Top bar and content

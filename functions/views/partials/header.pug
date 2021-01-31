@@ -19,7 +19,7 @@ header
                 li.nav-item
                     a(class= `${title}` === "Giỏ hàng" ? link_class_active:link_class href='/cart')= `Giỏ hàng `
                         span#cart-count
-                            if "cart_count" in session
+                            if "cart_count" in session && session.cart_count > 0
                                 | #{session.cart_count}
                             else
                                 |

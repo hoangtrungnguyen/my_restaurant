@@ -37,26 +37,37 @@ exports.menu_item = (req, res) => {
 exports.food_list = function (req, res) {
 
     // res.send('NOT IMPLEMENTED: Food list');
+    (async () => {
+        try {
+            const db = admin.firestore();
+            const value = await db.collection('food').get()
+            const foods = value.docs.map((doc) => {
+                let food = new Food(
+                    doc.data().title,
+                    doc.data().price,
+                    doc.data().description
+                )
 
-    const db = admin.firestore();
-    db.collection('food').get().then((value) => {
-        const foods = value.docs.map((doc) => {
-            let food = new Food(
-                doc.data().title,
-                doc.data().price,
-                doc.data().description
-            )
+                food.image_url = doc.data().image_url
+                food.id = doc.id
+                return food
+            });
 
-            food.image_url = doc.data().image_url
-            food.id = doc.id
-            return food
-        });
-        res.render('admin/food_list', {foods: foods, error: null, title: "Danh sách sản phẩm"})
-        // res.send(result);
-    }).catch((error) => {
-        console.log(error);
-        res.render('admin/food_list;', {foods: [], error: error, title: "Danh sách sản phẩm"})
-    });
+
+            const data = await db.collection('topping').get()
+            const toppings = data.docs.map((doc) => {
+                return {
+                    name: doc.data().name,
+                    price: doc.data().price,
+                    description: doc.data().description,
+                }
+            });
+
+            res.render('admin/food_list', {foods: foods,toppings:toppings, error: null, title: "Danh sách sản phẩm"})
+        } catch (error) {
+            res.status(404).send("error")
+        }
+    })()
 }
 // Display detail page for a specific food.
 exports.food_detail = function (req, res) {
@@ -120,14 +131,13 @@ exports.food_create_post = [
             async () => {
                 console.debug('Upload image')
                 const image_url = await new Promise((resolve, reject) => {
-                    let newFileName =  image.originalname;
+                    let newFileName = image.originalname;
 
                     let fileUpload = bucket.file(newFileName);
 
                     fileUpload.save(buffer)
 
                     console.debug(`UUID ${uuid}`)
-                    //TODO fix can not generate download id token
                     const blobStream = fileUpload.createWriteStream({
                         metadata: {
                             metadata: {
@@ -144,7 +154,6 @@ exports.food_create_post = [
                     });
 
                     blobStream.on('finish', () => {
-                        //TODO fix url download can not access
 
                         // The public URL can be used to directly access the file via HTTP.
                         // const url = `https://storage.googleapis.com/${bucket.name}/${fileUpload.name}`
@@ -196,7 +205,13 @@ exports.food_delete_get = function (req, res) {
 
 // Handle Author delete on POST.
 exports.food_delete_post = function (req, res) {
-    res.send('NOT IMPLEMENTED: Author delete POST');
+    const foodId = req.params.id
+
+    const db = admin.firestore();
+    db.collection('food').doc(foodId).delete().then((result) => {
+        res.redirect("/admin/food")
+    })
+
 };
 
 // Display Author update form on GET.
@@ -210,4 +225,27 @@ exports.food_update_post = function (req, res) {
 };
 
 
+exports.topping_create_get = function (req, res) {
+    res.render('admin/topping_create')
+}
 
+exports.topping_create_post = (req, res) => {
+    (async function () {
+        const db = admin.firestore()
+        const name = req.body.name
+        const price = req.body.price
+        const description = req.body.description
+
+        const ref = db.collection('topping').doc()
+        const id = ref.id
+
+        await ref.set({
+            name: name,
+            price: price,
+            description: description
+        })
+
+        res.redirect('/admin/food')
+
+    })()
+}
