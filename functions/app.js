@@ -115,7 +115,7 @@ exports.app = functions.https.onRequest(app);
 
 
 //comment before deploy
-// module.exports = app
+module.exports = app
 
 
 

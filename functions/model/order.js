@@ -25,6 +25,7 @@ function Order() {
     this.phone = "NaN"
     this.full_name = ""
     this.time_created = null;
+    this.total_bill = null;
     this.billCount = billCount
 
     function billCount() {
@@ -32,7 +33,10 @@ function Order() {
         console.log(this.foods)
         for(const index in this.foods){
             const food = this.foods[index]
-            bill += parseInt(food.food_price) * food.count
+            bill += parseInt(food.price) * food.count
+            for(const topping in food.toppings){
+                bill += topping.price * food.count
+            }
         }
         return bill
     }

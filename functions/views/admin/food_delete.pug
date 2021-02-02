@@ -3,5 +3,9 @@ extends admin_base
 block content
     h1 Xóa sản phẩm: #{food.title}
     p Bạn có chắc muốn xóa sản phẩm này
-    form(method='POST' action='')
+    form(method='POST' action=`/admin/food/${food.id}/delete`)
+        label(for='password') Nhập mã để xóa:
+        input#password.form-control(type='password' name='password')
+        input#imageName.form-control(hidden=true value=`${food.image_name}` name='image_name')
+        br
         button.btn.btn-danger(type='submit') xóa

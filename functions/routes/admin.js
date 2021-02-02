@@ -48,7 +48,7 @@ router.post('/food/:id/delete', food_controller.food_delete_post);
 router.get('/food/:id/update', food_controller.food_update_get);
 
 // POST request to update Book.
-router.post('/food/:id/update', food_controller.food_update_post);
+router.post('/food/:id/update',multer.single('file'), food_controller.food_update_post);
 
 // GET request for one Book.
 router.get('/food/:id', food_controller.food_detail);
@@ -103,7 +103,7 @@ router.get('/order/:id/delete', order_controller.order_delete_get);
 // POST request to delete Book.
 router.post('/order/:id/delete', order_controller.order_delete_post);
 
-// GET request to update Book.
+// GET request to update Order.
 router.get('/order/:id/update', order_controller.order_update_get);
 
 // POST request to update Book.

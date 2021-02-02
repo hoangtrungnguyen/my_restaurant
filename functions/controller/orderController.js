@@ -4,6 +4,7 @@ const admin = require('firebase-admin')
 const async = require('async');
 const Food = require("../model/food")
 const Order = require("../model/order")
+const cartUtil = require('./cart_util.js');
 const {body, validationResult} = require("express-validator");
 
 
@@ -30,10 +31,12 @@ const {body, validationResult} = require("express-validator");
 //
 
 //for user
+
+
 exports.cart = (req, res) => {
 
     const order_items = req.session.cart ? req.session.cart : []
-    console.log(order_items)
+    // console.log(order_items)
     // after call function getOrders
     //  [
     //     {
@@ -63,7 +66,7 @@ exports.cart = (req, res) => {
             console.error(e)
         }
 
-        console.debug("Total price " + totalPrice)
+        // console.debug("Total price " + totalPrice)
         res.render('cart', {
             title: "Giỏ hàng",
             order_items: items,
@@ -96,6 +99,7 @@ async function getOrders(cart) {
         food.price = el.data().price
         food.description = el.data().description
         food.image_url = el.data().image_url
+        food.ref = el.ref
 
         return food
     })
@@ -105,11 +109,8 @@ async function getOrders(cart) {
             let food = items.find(e => {
                 return e.id.toString() === cart[pro].foodId.toString()
             })
-            let order_bill = 0
-            for (let i = 0; i < cart[pro].toppings.length; i++) {
-                order_bill += parseInt(cart[pro].toppings[i].topping_price) * parseInt(cart[pro].count)
-            }
-            order_bill += parseInt(cart[pro].price) * parseInt(cart[pro].count)
+            let order_bill = cartUtil.get_order_bill(cart, pro)
+
             result.push({
                 order_bill: order_bill,
                 bill_per_item: order_bill / cart[pro].count,
@@ -127,6 +128,7 @@ exports.add_to_cart = (req, res) => {
     const title = req.query.title
     const price = req.query.price
     const foodId = req.body.foodId
+    const count = req.body.count ? parseInt(req.body.count) : 1
     const toppings = req.body.toppings ? req.body.toppings : []
 
     let order_session_id = `${foodId}`
@@ -141,35 +143,34 @@ exports.add_to_cart = (req, res) => {
     if (req.session.cart) {
 
         if (req.session.cart[order_session_id]) {
-            req.session.cart[order_session_id].count += 1
+            req.session.cart[order_session_id].count += count
         } else {
             req.session.cart[order_session_id] = {
                 orderId: order_session_id,
                 foodId: foodId,
-                count: 1,
+                count: count,
                 note: "",
                 name: title,
                 price: parseInt(price),
                 toppings: toppings
             }
         }
-        req.session.cart_count += 1
+
     } else {
         req.session.cart = {}
         req.session.cart[order_session_id] = {
             orderId: order_session_id,
-            count: 1,
+            count: count,
             foodId: foodId,
             note: "",
             name: title,
             price: parseInt(price),
             toppings: toppings,
         }
-        req.session.cart_count = 1
     }
-    // next()
-    console.debug(`Session cart_count ${req.session.cart_count}`)
-    res.send({cart_count: req.session.cart_count})
+    const cart_count = cartUtil.count_item_in_cart(req.session.cart)
+    req.session.cart_count = cart_count
+    res.send({cart_count: cart_count})
 }
 
 
@@ -213,7 +214,7 @@ exports.set_quantity = (req, res) => {
         count: count,
         price: cart[orderId].price,
         cart_count: cart_count,
-        total_order_bill: total_order_bill
+        total_bill: total_order_bill
     })
 }
 
@@ -223,50 +224,47 @@ exports.remove_an_order = (req, res) => {
         delete req.session.cart[id]
     }
     let cart_count = 0
+    let total_bill = 0
     for (const property in req.session.cart) {
         if (req.session.cart.hasOwnProperty(property)) {
             cart_count += req.session.cart[property].count
+            total_bill += cartUtil.get_order_bill(req.session.cart, property)
         }
     }
     req.session.cart_count = cart_count
 
     res.status(200).send({
         message: "OK",
-        cart_count: cart_count
+        cart_count: cart_count,
+        total_bill: total_bill
     })
 }
 
 exports.submit_order = [
-    body("fullName", "Tên đầy đủ không được để trống").trim().isLength({min: 1}),
-    body("phone", "Số điện thoại không được để trống").isNumeric().trim().isLength({min: 1}),
-    body("address", "Địa chỉ không được để trống").trim().isLength({min: 1}),
     (req, res, next) => {
         console.log("Submit Order")
-        // Extract the validation errors from a request.
-        const errors = validationResult(req);
-        //CHecking if title or content is empty
-        if (!errors.isEmpty()) {
-            // There are errors. Render the form again with sanitized values/error messages.
-            res.send(errors.array())
-            next()
-            return;
-        }
 
 
-        const session_order_items = req.session.cart
+        const cart = req.session.cart
 
         function isEmpty(obj) {
             return Object.keys(obj).length === 0;
         }
 
-        if (isEmpty(session_order_items)) {
+        if (isEmpty(cart)) {
             res.redirect("/menu")
         }
 
         (async function () {
             const db = admin.firestore();
-            const ref = await db.collection("order").doc()
-            ref.set(
+            const ref = db.collection("order").doc()
+
+            let total_bill = 0
+            for (const pro in req.session.cart) {
+                let bill = cartUtil.get_order_bill(cart, pro)
+                total_bill += bill
+            }
+            await ref.set(
                 {
                     // session_order_items,
                     full_name: req.body.fullName,
@@ -274,6 +272,8 @@ exports.submit_order = [
                     address: req.body.address,
                     email: req.body.email,
                     time_created: new Date(),
+                    total_bill: total_bill,
+                    note: req.body.note ? req.body.note : "",
                     status: "WAITING"
                 }
             )
@@ -282,20 +282,20 @@ exports.submit_order = [
             // for (const property in session_order_items) {
             //     console.log(`${property}: ${session_order_items[property]}`);
             // }
-            const items = Object.keys(session_order_items).map((key) => {
+            const items = Object.keys(cart).map((key) => {
                 return {
                     food_id: key,
-                    food_price: session_order_items[key].price,
-                    food_name: session_order_items[key].name,
-                    count: session_order_items[key].count,
-                    note: session_order_items[key].note,
-                    toppings: session_order_items[key].toppings,
+                    price: cart[key].price,
+                    name: cart[key].name,
+                    count: cart[key].count,
+                    note: cart[key].note,
+                    toppings: cart[key].toppings,
                 }
             })
 
             // ref.collection("food")
 
-            console.log(items)
+            // console.log(items)
             const batch = db.batch()
             items.forEach((item) => {
                 const docRef = db.collection("order")
@@ -307,7 +307,9 @@ exports.submit_order = [
             batch.commit().then((value) => {
                 req.session.cart = {}
                 delete req.session.cart_count
-                res.render("submitted")
+                res.send({
+                    message: "OK"
+                })
             }).catch((err) => {
                 res.status(404).render("order/submit_fail", {
                     title: "Lỗi khi đặt đơn",
@@ -331,9 +333,9 @@ exports.set_note = (req, res) => {
         cart[orderId].note = note
         res.send(
             {
-            message: "OK",
-            note:note
-        })
+                message: "OK",
+                note: note
+            })
     } else {
         res.status(400).send({
             message: "error"
@@ -357,21 +359,27 @@ exports.menu_item_topping = (req, res) => {
                 description: e.data().description,
             }
         })
-        res.render("order/topping", {
-            name: name,
-            food_id: id,
+        const doc = await db.collection('food').doc(id).get()
+
+        res.render("order/food_detail", {
+            food: {
+                id: id,
+                description: doc.data().description,
+                title: doc.data().title,
+                image_url: doc.data().image_url,
+                price: doc.data().price
+            },
             toppings: toppings,
-            food_price: food_price
         })
 
     })()
 
 }
 
-//cart in session
-function countItemsInCart(cart){
-
+exports.submitted = (req, res) => {
+    res.render("submitted")
 }
+
 /// for admin ///
 
 
@@ -381,17 +389,19 @@ exports.order_list = function (req, res, next) {
     (async () => {
         const value = await db.collection('order').get();
         const items = value.docs.map((doc) => {
-
             let order = new Order()
             order.email = doc.data().email
             order.full_name = doc.data().full_name
             order.phone = doc.data().phone
             order.status = doc.data().status
             order.address = doc.data().address
+            order.time_created = doc.data().time_created.toDate()
+            order.total_bill = doc.data().total_bill
             order.id = doc.id
             return order
         });
         let orders = []
+
         await async.map(items, async (order, callback) => {
             try {
                 // const response = await db.collection('order').doc(order.id).collection('food').get()
@@ -419,7 +429,7 @@ exports.order_list = function (req, res, next) {
             } else {
                 console.log('All item have been processed successfully');
                 orders = results
-                console.log(results)
+                // console.log(results)
                 res.render('admin/order_list', {
                     orders: results,
                     error: null, title: "Danh sách đơn hàng"
@@ -440,18 +450,19 @@ exports.order_detail = function (req, res) {
         let order = new Order()
         order.full_name = value.data().full_name
         order.email = value.data().email
+        order.total_bill = value.data().total_bill
         order.phone = value.data().phone
         order.address = value.data().address
         order.time_created = value.data().time_created
         order.status = value.data().status
+        order.note = value.data().note
         order.id = id
         const docs = (await db.collection('order').doc(id).collection('food').get()).docs
         order.foods = docs.map(e => e.data())
-        const totalBill = order.billCount()
+
         res.render("admin/order_detail", {
             order: order,
             title: "Đơn hàng",
-            total_bill: totalBill
         })
     })()
 };
@@ -485,8 +496,38 @@ exports.order_update_get = function (req, res) {
     res.send('NOT IMPLEMENTED: Author update GET');
 };
 
-// Handle Author update on POST.
-exports.order_update_post = function (req, res) {
-    res.send('NOT IMPLEMENTED: Author update POST');
+// Handle Order update on POST.
+// Not yet update topping data //
+
+//action: BACK, STAY,
+exports.order_update_post = function (req, res, next) {
+
+    (async () => {
+        let action = req.body.action ? req.body.action : 'BACK'
+        const id = req.params.id
+        let order = new Order()
+        order.full_name = req.body.full_name
+        order.email = req.body.email
+        order.phone = req.body.phone
+        order.address = req.body.address
+        order.status = req.body.status
+        order.note = req.body.note
+        order.id = id
+        try {
+            const db = admin.firestore();
+            console.log(typeof order)
+            console.log(order)
+            const response = await db.collection('order').doc(order.id).update({
+                status: order.status
+            });
+
+            res.send({
+                action: action,
+                message: "Thành công",
+            })
+        } catch (e) {
+            next(e)
+        }
+    })()
 };
 

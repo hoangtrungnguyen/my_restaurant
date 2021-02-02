@@ -8,11 +8,11 @@ block content
             //label(for='image') Ảnh:
             //input#image.form-control(type='file' name='image' alt="Submit" width="48" height="48")
             label(for='name') Tên:
-            input#name.form-control(type='name' name='name' alt="Tên" value=(undefined === topping ? '' : topping.name))
+            input#name.form-control(type='name' name='name' alt="Tên" value=(undefined === item_detail ? '' : item_detail.name))
             label(for='price') Giá topping:
-            input#price.form-control(type='number', placeholder='VD: 10000' name='price' value=(undefined === topping ? '' : topping.price))
+            input#price.form-control(type='number', placeholder='VD: 10000' name='price' value=(undefined === item_detail ? '' : item_detail.price))
             label(for='description') Mô tả ngắn:
-            textarea#description.form-control(placeholder='Nội dung...' name='description', rows=5, maxlength=200 )= (undefined === topping ? '' : topping.description)
+            textarea#description.form-control(placeholder='Nội dung...' name='description', rows=5, maxlength=200 )= (undefined === item_detail ? '' : item_detail.description)
         button.btn.btn-primary(type='submit') Tạo
 
 

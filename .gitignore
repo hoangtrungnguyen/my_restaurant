@@ -64,3 +64,11 @@ node_modules/
 
 # dotenv environment variables file
 .env
+/.idea/my_restaurant.iml
+/.idea/codeStyles/codeStyleConfig.xml
+/.idea/modules.xml
+/.idea/jsLibraryMappings.xml
+/.idea/inspectionProfiles/Project_Default.xml
+/.idea/vcs.xml
+/.idea/watcherTasks.xml
+/.idea/workspace.xml

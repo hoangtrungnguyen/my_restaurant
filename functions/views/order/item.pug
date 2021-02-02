@@ -12,11 +12,12 @@
                         a.btn.btn-primary.btn-sm.order-note.text-white(style="font-size:10px")=  item.order.note && item.order.note.length > 0 ? "Sửa ghi chú" : "Thêm ghi chú"
                         //data-target="#noteModal"
                         //data-toggle="modal"
-                        dd.mb-0
+                        dd.mb-1
                             small.note.font-12 #{item.order.note}
 
                         if item.order.toppings && item.order.toppings.length > 0
-                            hr.m-1.mt-0.text-muted
+                            if item.order.note.length > 0
+                                hr.m-1.mt-0(style="background-color:gray")
                             dl.small.m-b-none
                                 dt Đồ thêm
                                 for topping in item.order.toppings

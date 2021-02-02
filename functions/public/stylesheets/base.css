@@ -4,17 +4,18 @@ html {
     box-sizing: border-box;
 }
 
-main{
+main {
     min-height: 100vh;
     height: 100%;
 }
 
-body{
+body {
     /*background-color: transparent;*/
-    padding-top: 56px;
+    /*padding-top: 56px;*/
 }
-footer{
-    bottom:0;
+
+footer {
+    bottom: 0;
     background: #f3f3f3;
     height: 100px;
     right: 0;
@@ -24,18 +25,102 @@ footer{
 }
 
 
-.font-20{
+.font-20 {
     font-size: 20px;
 }
 
-.font-16{
+.font-16 {
     font-size: 16px;
 }
 
-.font-12{
+.font-14 {
+    font-size: 14px;
+}
+
+.font-12 {
     font-size: 12px;
 }
 
-.font-10{
-    font-size: 12px;
+.font-10 {
+    font-size: 10px;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.height-0 {
+    height: 0;
+}
+
+/*** Nav bar style ***/
+
+
+/*LOGO brand position */
+.logo {
+    right: 50%;
+    top: 1rem;
+    /*transform: translateY(-50%);*/
+    margin-right: 0;
+    color: white;
+}
+
+.logo:hover {
+    color: white;
+}
+
+
+/*Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+    .logo {
+        left: 2%;
+        right: auto;
+    }
+}
+
+/*Menu style */
+#mainNav a {
+    color: white;
+}
+
+.masthead {
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 35rem;
+    padding: 15rem 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 75%, #000000 100%) no-repeat scroll center;
+    background-size: cover;
+}
+
+.masthead h2 {
+    max-width: 20rem;
+    font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+    .masthead h1 {
+        font-size: 4rem;
+        line-height: 4rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .masthead {
+        height: 100vh;
+        padding: 0;
+    }
+
+    .masthead h1 {
+        font-size: 6.5rem;
+        line-height: 6.5rem;
+        letter-spacing: 0.8rem;
+    }
+
+    .masthead h2 {
+        max-width: 30rem;
+        font-size: 1.25rem;
+    }
 }

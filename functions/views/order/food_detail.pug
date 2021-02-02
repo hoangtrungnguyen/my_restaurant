@@ -1,13 +1,28 @@
 extends ../layout
 
 block content
-    .container
-        h2.my-4 Thực đơn > #{name}
+    .container.pt-4
         .row
-            .col-md-8
-                img.img-fluid(src='http://placehold.it/750x500' alt='')
-            .col-md-4
-                h5.py-4 Thêm topping
+            // ảnh bên trái
+            .col-md-6
+                .col.p-0
+                    //img.p-0.img-fluid(src='http://placehold.it/750x750' alt='')
+                    img.p-0.img-fluid(src=`${food.image_url}` alt='')
+                    .row.pt-3
+                        .col-4
+                            a(href='#')
+                                img.img-fluid.p-0(src='http://placehold.it/325x325' alt='' height=225)
+                        .col-4
+                            a(href='#')
+                                img.img-fluid.p-0(src='http://placehold.it/325x325' alt='' height=225)
+                        .col-4
+                            a(href='#')
+                                img.img-fluid.p-0(src='http://placehold.it/325x325' alt='' height=225)
+
+            .col-md-6.pt-0
+                h3.pt-md-0.pt-sm-4 #{food.title}
+                p #{food.description}
+                h4.py-4 Topping ăn kèm
                 form#add-topping.px-4
                     each topping in toppings
                         .row.justify-content-between
@@ -15,17 +30,41 @@ block content
                                 input.topping-checkbox(type="checkbox" data-id=`${topping.id}` data-price=`${topping.price}` data-name=`${topping.name}`)
                                 label(for=`${topping}`).px-2 #{topping.name}
                             p +#{formatBill(topping.price)}VND
+                    .row.p-0.m-0.pt-3
+                        .col-3
+                            input#food-quantity.form-control(
+                                type='number' min="0" value=1
+                                style="padding-right:0;")
 
+                        .col-9
+                            button#btn-add-to-cart.btn.btn-primary.w-100
+                                .row.justify-content-between.mx-1
+                                    span#bill #{formatBill(food.price)}VND/suất
+                                    span Thêm vào giỏ
 
-                    button#btn-add-to-cart.btn.btn-primary.w-100.my-3
-                        .row.justify-content-between.px-4
-                            span#bill #{formatBill(food_price)}VND
-                            span Thêm vào giỏ hàng
+                h4.my-3 Thông tin thêm
+                include addition_info
+        // Related Projects Row
+        h3.my-4 Cách chúng tôi tạo ra sản phẩm
+        .row
+            .col-md-3.col-sm-6.mb-4
+                a(href='#')
+                    img.img-fluid(src='http://placehold.it/500x300' alt='')
+            .col-md-3.col-sm-6.mb-4
+                a(href='#')
+                    img.img-fluid(src='http://placehold.it/500x300' alt='')
+            .col-md-3.col-sm-6.mb-4
+                a(href='#')
+                    img.img-fluid(src='http://placehold.it/500x300' alt='')
+            .col-md-3.col-sm-6.mb-4
+                a(href='#')
+                    img.img-fluid(src='http://placehold.it/500x300' alt='')
 
-                input#bill-data(hidden=true data-price=`${food_price}`)
-                input#food-name(hidden=true data-name=`${name}`)
-                input#food-id(hidden=true data-id=`${food_id}`)
-                input#food-price(hidden=true data-price=`${food_price}`)
+                input#bill-data(hidden=true data-price=`${food.price}`)
+                input#food-name(hidden=true data-name=`${food.title}`)
+                input#food-id(hidden=true data-id=`${food.id}`)
+                input#food-price(hidden=true data-price=`${food.price}`)
+
 
 block script
 
@@ -47,15 +86,16 @@ block script
                         bill -= topping_price
                     }
                     billTag.data('foodPrice', bill)
-                    billTag.text(formatBill(bill) + "VND")
+                    billTag.text(formatBill(bill) + "VND/suất")
                 })
-
             })
+
 
             $("#btn-add-to-cart").click((e) => {
                 const food_name = $("#food-name").data('name')
                 const food_id = $("#food-id").data('id')
                 const food_price = $("#food-price").data('price')
+                const food_quantity = $("#food-quantity").val()
                 e.preventDefault()
                 var toppings = []
                 $(".topping-checkbox").each((index, el) => {
@@ -73,6 +113,7 @@ block script
                     `ID ${food_id}`,
                     `Name ${food_name}`,
                     `Price ${food_price}`,
+                    `Quantity ${food_quantity}`,
                     `Toppings ${toppings}`)
 
                 fetch(`/menu/add-to-cart?title=${food_name}&price=${food_price}`, {
@@ -83,13 +124,13 @@ block script
                     },
                     body: JSON.stringify({
                         foodId: food_id,
+                        count:food_quantity,
                         toppings: toppings
                     })
                 }).then(response => {
                     if (response.status == 200) {
-                        window.location.href = '/menu'
+                        window.location.href = '/cart'
                     }
-
                 })
             })
 

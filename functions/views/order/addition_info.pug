@@ -1,0 +1,30 @@
+.container-fluid
+    .row
+        .card.mt-3.tab-card(style="width:100%")
+            .card-header.tab-card-header
+                ul#myTab.nav.nav-tabs.card-header-tabs(role='tablist')
+                    li.nav-item
+                        a#one-tab.nav-link(data-toggle='tab' href='#one' role='tab' aria-controls='One' aria-selected='true') Giá trị dinh dưỡng
+                    li.nav-item
+                        a#two-tab.nav-link(data-toggle='tab' href='#two' role='tab' aria-controls='Two' aria-selected='false') Kích cỡ
+                    li.nav-item
+                        a#three-tab.nav-link(data-toggle='tab' href='#three' role='tab' aria-controls='Three' aria-selected='false') Nguyên liệu
+            #myTabContent.tab-content
+                #one.tab-pane.fade.show.active.p-3(role='tabpanel' aria-labelledby='one-tab')
+                    ul
+                        li Calories
+                        li Đạm
+                        li Protein
+                #two.tab-pane.fade.p-3(role='tabpanel' aria-labelledby='two-tab')
+                    table.table
+                        thead
+                            th Đơn vị
+                            th Kích cỡ
+                        tbody
+                            td Suất
+                            td 10cm x 20cm
+                #three.tab-pane.fade.p-3(role='tabpanel' aria-labelledby='three-tab')
+                    ul
+                        li Gà
+                        li Gạo
+                        li Hành tây
