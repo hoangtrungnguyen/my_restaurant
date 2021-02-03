@@ -1,8 +1,40 @@
-footer
-    p.float-right
-      a(href='#') Back to top
-    p
-      | © 2017-2018 Company, Inc. ·
-      a(href='#') Privacy
-      |  ·
-      a(href='#') Terms
+style.
+    footer .row p{
+        font-size: 14px;
+        text-align: left;
+    }
+
+    footer .row p {
+        font-size: 14px;
+        text-align: left;
+    }
+footer.text-light
+    .col
+        .row
+            .col-lg-3.justify-content-center
+                h1.text-center LOGO
+            .col-lg-3
+                h3 About
+                p
+                    a Về chúng tôi
+                p
+                    a Địa chỉ
+                p Sản phẩm
+            .col-lg-3
+                h3 Social
+                p
+                    a(href="#" style="color:light-blue").fa.fa-facebook  Facebook
+                p
+                    a(href="#" style="color:red").fa.fa-youtube  Youtube
+                p
+                    a(href="#").fa.fa-tiktok
+            .col-lg-3
+                h3 Service
+                p Giao hàng
+                p Thanh toán
+
+        .container.pt-4.text-center
+            p © 2017-2018 Company, Inc. ·
+                a.text-light(href='#') Privacy
+                |  ·
+                a.text-light(href='#') Terms

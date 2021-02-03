@@ -2,9 +2,12 @@ doctype html
 html
     head
         title= title
-        link(rel='stylesheet', href='/stylesheets/base.css')
+
         //link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
         link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
+        link( type='text/css' href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet")
+        link(rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css")
+        link(rel='stylesheet', href='/stylesheets/base.css' type='text/css')
 
     body#page-top
         - function formatBill(bill){return new Intl.NumberFormat('vi-VI', { maximumSignificantDigits: 3 }).format(bill)}
@@ -62,11 +65,23 @@ html
                     if ($("#mainNav").offset().top > 100) {
                         $("#mainNav").addClass("bg-dark");
                     } else {
-                        $("#mainNav").removeClass("bg-dark");
+                        if ($("#mainNav").width() > 990)
+                            $("#mainNav").removeClass("bg-dark");
+                        else
+                            $("#mainNav").addClass("bg-dark");
+
                     }
                 };
+
                 // Collapse now if page is not at top
                 navbarCollapse();
                 // Collapse the navbar when page is scrolled
                 $(window).scroll(navbarCollapse);
+                $(window).resize(() => {
+                    if ($("#mainNav").width() < 990) {
+                        $("#mainNav").addClass("bg-dark");
+                    } else {
+                        $("#mainNav").removeClass("bg-dark");
+                    }
+                })
             })(jQuery); // End of use strict

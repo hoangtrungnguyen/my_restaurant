@@ -80,7 +80,7 @@ exports.food_detail = function (req, res) {
 
     (async () => {
         const foodId = req.params.id
-        const food = await  getFood(foodId)
+        const food = await getFood(foodId)
         res.render('admin/food_detail', {food: food})
     })()
 };

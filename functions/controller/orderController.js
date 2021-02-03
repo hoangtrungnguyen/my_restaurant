@@ -345,9 +345,7 @@ exports.set_note = (req, res) => {
 
 
 exports.menu_item_topping = (req, res) => {
-    const name = req.params.name
     const id = req.params.id
-    const food_price = parseInt(req.params.food_price)
     const db = admin.firestore();
     (async () => {
         const ref = await db.collection("topping").get()
@@ -359,21 +357,30 @@ exports.menu_item_topping = (req, res) => {
                 description: e.data().description,
             }
         })
-        const doc = await db.collection('food').doc(id).get()
-
+        const food = await getFood(id)
         res.render("order/food_detail", {
-            food: {
-                id: id,
-                description: doc.data().description,
-                title: doc.data().title,
-                image_url: doc.data().image_url,
-                price: doc.data().price
-            },
+            food: food,
             toppings: toppings,
         })
-
     })()
 
+}
+
+async function getFood(foodId) {
+    const db = admin.firestore();
+    const ref = await db.collection('food').doc(foodId)
+    let food = new Food()
+    food.ref = ref.path
+    const doc = await ref.get()
+    food.id = doc.id
+    food.description = doc.data().description
+    food.price = doc.data().price
+    food.title = doc.data().title
+    food.image_url = doc.data().image_url
+    food.image_name = doc.data().image_name
+    food.is_remaining = doc.data().is_remaining
+    food.ref = doc.ref
+    return food
 }
 
 exports.submitted = (req, res) => {

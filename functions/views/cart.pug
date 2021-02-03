@@ -3,29 +3,26 @@ extends layout
 block content
     // This page design following this example
     //https://www.bootdey.com/snippets/view/shopping-cart-checkout#css
-    link(href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet")
     link(rel='stylesheet', href='/stylesheets/cart.css')
 
     style.
-        .card-horizontal {
-            display: flex;
-            flex: 1 1 auto;
-        }
-
         hr {
             background-color: black;
         }
-    input(type='hidden' name="cart_count_input_holder")
-    .container.p-0
-        h1 Giỏ hàng
+
+    .parallax#cart-banner
+        div.container-fluid.head-banner
+            h2 Giỏ hàng
+            p
+    input(hidden=true name="cart_count_input_holder")
     if (order_items.length < 1)
-        .container-fluid.m-auto.pt-4
+        .container-fluid.m-auto.py-4
             .d-flex.flex-column.m-auto.justify-content-center
                 h4.align-self-center Hãy thêm một số món hàng
-                a.btn.btn-primary.w-25.align-self-center(href="/menu") Tiếp tục mua sắm
+                a.btn.btn-primary.w-25.align-self-center(href="/menu") Tiếp tục mua
 
     if (order_items.length >= 1)
-        .container.mt-4
+        .container.pt-4
             .row
                 // cart details
                 .col-md-8
@@ -40,7 +37,7 @@ block content
                             include order/item
 
 
-                        .container-fluid.p-0
+                        .container.p-0
                             .card.mt-4
                                 .card-body
                                     h5.cart-title Lưu ý:
@@ -163,7 +160,7 @@ block script
                                 const totalFoodBill = $(`.food-total-bill[data-orderid=${orderId}]`)
                                 totalFoodBill.text(formatBill(response.order_bill) + "VND")
                                 const count = response.cart_count
-                                $(".cart-count").text(count)
+                                $(".cart-count").text(count).addClass('cart-badge')
                                 $("#order_count_in_cart").text(count)
                                 $('input[name="cart_count_input_holder"]').val(count)
                                 $("#total-order-bill").text(formatBill(response["total_bill"]) + "VND")
@@ -196,7 +193,7 @@ block script
                             return
                         }
                         $(`.ibox-content[data-id="${orderId}"]`).remove()
-                        $(".cart-count").text(response.cart_count)
+                        $(".cart-count").text(response.cart_count).addClass('cart-badge')
                         $("#order_count_in_cart").text(response.cart_count)
                         $("#total-order-bill").text(formatBill(response["total_bill"]) + "VND")
 

@@ -1,6 +1,23 @@
 extends ../layout
 
 block content
+    style.
+        .head-banner {
+            width: 100%;
+            padding: 10vh 0;
+        }
+
+        @media (min-width: 992px) {
+            .head-banner {
+                width: 100%;
+                padding: 15vh 0;
+            }
+        }
+
+    .parallax#blog-banner
+        div.container-fluid.head-banner
+            h2 Món ăn
+            p  Thêm topping, chi tiết về sản phẩm.
     .container.pt-4
         .row
             // ảnh bên trái
@@ -21,8 +38,11 @@ block content
 
             .col-md-6.pt-0
                 h3.pt-md-0.pt-sm-4 #{food.title}
-                p #{food.description}
-                h4.py-4 Topping ăn kèm
+                p.text-dark.text-left #{food.description}
+                hr
+                h4 #{formatBill(food.price)}VND
+                hr
+                h5.py-4 Topping ăn kèm
                 form#add-topping.px-4
                     each topping in toppings
                         .row.justify-content-between
@@ -42,7 +62,7 @@ block content
                                     span#bill #{formatBill(food.price)}VND/suất
                                     span Thêm vào giỏ
 
-                h4.my-3 Thông tin thêm
+                h5.my-3 Thông tin thêm
                 include addition_info
         // Related Projects Row
         h3.my-4 Cách chúng tôi tạo ra sản phẩm

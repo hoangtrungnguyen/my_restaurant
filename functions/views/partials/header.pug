@@ -1,28 +1,71 @@
 - var link_class= ['nav-link']
 - var link_class_active = ['nav-link',"active"]
 
+style.
+    .cart-icon {
+        color: white;
+        text-decoration: none;
+        position: relative;
+        display: inline-block;
+    }
+
+    .cart-icon .cart-badge {
+        font-size: 12px;
+        height: 20px;
+        width: 20px;
+        text-align: center;
+        position: absolute;
+        top: 1px;
+        right: -3px;
+        border-radius: 80%;
+        background: red;
+        color: white;
+    }
+    #mainNav .active{
+    color: white;
+    }
+
+    #mainNav .nav-link {
+        color: #d5d5d7;
+    }
+    #mainNav a:hover{
+        color: #ffffff;
+
+    }
+
 nav#mainNav.navbar.navbar-expand-lg.fixed-top
-    .container.text-white
+    .container-fluid.d-flex.justify-content-between
+        button.navbar-toggler.navbar-toggler-right(type='button', data-toggle='collapse', data-target='#navbarResponsive', aria-controls='navbarResponsive',
+            aria-expanded='false', aria-label='Toggle navigation' style="color:white")
+            i(aria-hidden="true").fa.fa-bars
         a.navbar-brand.js-scroll-trigger.logo(href='#page-top') LOGO
-        button.navbar-toggler.navbar-toggler-right(type='button', data-toggle='collapse', data-target='#navbarResponsive', aria-controls='navbarResponsive', aria-expanded='false', aria-label='Toggle navigation')
-            | Menu
-            i.fas.fa-bars
         #navbarResponsive.collapse.navbar-collapse
-            ul.navbar-nav.ml-auto
+            ul.navbar-nav.m-auto
                 li.nav-item
-                    a(class= `${title}` === "Trang chủ" ? link_class_active: link_class href='/')
+                    a(class= `${title}` === "Trang chủ" ? link_class_active:link_class href='/')
                         | Trang chủ
-                        span.sr-only (current)
                 li.nav-item
-                    a(class= `${title}` === "Thực đơn" ? link_class_active: link_class href='/menu') Thực đơn
+                    a(class= `${title}` === "Thực đơn" ? link_class_active:link_class href='/menu') Thực đơn
                 li.nav-item
-                    a(class= `${title}` === "Blog" ? link_class_active: link_class href='/blog') Blog
+                    a(class= `${title}` === "Blog" ? link_class_active:link_class href='/blog') Blog
                 li.nav-item
-                    a(class= `${title}` === "Liên hệ" ? link_class_active: link_class href='#') Liên hệ
-                li.nav-item
-                    a(class= `${title}` === "Giỏ hàng" ? link_class_active: link_class href='/cart')= `Giỏ hàng `
-                        span.cart-count
+                    a(class= `${title}` === "Liên hệ" ? link_class_active:link_class href='#') Liên hệ
+        ul.navbar-nav
+            li.nav-item.px-1
+                a.cart-icon(class= `${title}` === "Giỏ hàng" ? link_class_active:link_class href='/cart')
+                        i(aria-hidden="true").bi.bi-bag
+
+                        span(class= ("cart_count" in session && session.cart_count > 0)?["cart-badge"]:[]).cart-count.label.label-primary
                             if "cart_count" in session && session.cart_count > 0
                                 | #{session.cart_count}
                             else
                                 |
+            li.nav-item#account-nav-item
+                a.cart-icon(class= `${title}` === "Tài khoản" ? link_class_active:link_class href='/account')
+                    i(aria-hidden="true").bi.bi-person
+
+
+script.
+    $('#account-nav-item').hover(()=>{
+
+    })

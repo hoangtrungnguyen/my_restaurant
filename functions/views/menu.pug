@@ -1,6 +1,10 @@
 extends layout
 
 block content
+    .parallax#menu-banner
+        div.container-fluid.head-banner
+            h2 Menu
+            p Chọn món ăn của bạn
     .container
         .row
             .col-lg-3
@@ -11,27 +15,27 @@ block content
                     a.list-group-item(href='#') Ăn vặt
             // /.col-lg-3
             .col-lg-9
-                #carouselExampleIndicators.carousel.slide.my-4(data-ride='carousel')
-                    ol.carousel-indicators
-                        li.active(data-target='#carouselExampleIndicators' data-slide-to='0')
-                        li(data-target='#carouselExampleIndicators' data-slide-to='1')
-                        li(data-target='#carouselExampleIndicators' data-slide-to='2')
-                    .carousel-inner(role='listbox')
-                        .carousel-item.active
-                            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1575325952371-0ded5da744f1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='First slide')
-                        .carousel-item
-                            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1606851686066-c7f17f1ece96?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='Second slide')
-                        .carousel-item
-                            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1447078806655-40579c2520d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='Third slide')
-                    a.carousel-control-prev(href='#carouselExampleIndicators' role='button' data-slide='prev')
-                        span.carousel-control-prev-icon(aria-hidden='true')
-                        span.sr-only Previous
-                    a.carousel-control-next(href='#carouselExampleIndicators' role='button' data-slide='next')
-                        span.carousel-control-next-icon(aria-hidden='true')
-                        span.sr-only Next
-                .row
+                //#carouselExampleIndicators.carousel.slide.my-4(data-ride='carousel')
+                //    ol.carousel-indicators
+                //        li.active(data-target='#carouselExampleIndicators' data-slide-to='0')
+                //        li(data-target='#carouselExampleIndicators' data-slide-to='1')
+                //        li(data-target='#carouselExampleIndicators' data-slide-to='2')
+                //    .carousel-inner(role='listbox')
+                //        .carousel-item.active
+                //            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1575325952371-0ded5da744f1?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='First slide')
+                //        .carousel-item
+                //            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1606851686066-c7f17f1ece96?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='Second slide')
+                //        .carousel-item
+                //            img.d-block.img-fluid(src='https://images.unsplash.com/photo-1447078806655-40579c2520d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&h=350&q=80' width='900' height='350' alt='Third slide')
+                //    a.carousel-control-prev(href='#carouselExampleIndicators' role='button' data-slide='prev')
+                //        span.carousel-control-prev-icon(aria-hidden='true')
+                //        span.sr-only Previous
+                //    a.carousel-control-next(href='#carouselExampleIndicators' role='button' data-slide='next')
+                //        span.carousel-control-next-icon(aria-hidden='true')
+                //        span.sr-only Next
+                .row.my-4
                     for food,index in foods
-                        .col-lg-4.col-sm-6.mb-4
+                        .col-lg-4.col-sm-6.mb-4.pt-3
                             .card.h-100
                                 //p= food.image_url
                                 a(href=href = `/menu/${food.id}`)
@@ -45,7 +49,7 @@ block content
                                     h4.card-title
                                         a(href=`/menu/topping/${food.id}/${food.title}/${food.price}`)= food.title
                                     h5= formatBill(food.price) + " VND"
-                                    p.card-text= food.description
+                                    //p.card-text= food.description
                                     //a.btn.btn-primary.mb-3(href=`/menu/${food.id}`) Chi tiết
                                     .col.p-0
                                         a.col-md-6.btn.custom-food.border.border-primary.rounded.font-10(
@@ -94,7 +98,7 @@ block script
                                 console.log(`data ${data.cart_count}`);
                                 // console.log($("header ul").children()[3].val())
                                 // $("header ul").children()[3]
-                                $(".cart-count").text(data.cart_count)
+                                $(".cart-count").text(data.cart_count).addClass('cart-badge')
                                 btn.text("Giỏ hàng")
                                 btn.css('background-color', 'gray');
                                 btn.data("clicked", true)
