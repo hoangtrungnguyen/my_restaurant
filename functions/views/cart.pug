@@ -1,5 +1,10 @@
 extends layout
 
+block banner
+    .parallax#cart-banner
+        div.container-fluid.head-banner
+            h2 Giỏ hàng
+            p
 block content
     // This page design following this example
     //https://www.bootdey.com/snippets/view/shopping-cart-checkout#css
@@ -9,11 +14,6 @@ block content
         hr {
             background-color: black;
         }
-
-    .parallax#cart-banner
-        div.container-fluid.head-banner
-            h2 Giỏ hàng
-            p
     input(hidden=true name="cart_count_input_holder")
     if (order_items.length < 1)
         .container-fluid.m-auto.py-4

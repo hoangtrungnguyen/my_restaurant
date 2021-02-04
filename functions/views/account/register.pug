@@ -1,0 +1,42 @@
+extends ../layout
+
+block banner
+    .parallax#cart-banner
+        div.container-fluid.head-banner
+            h2 Tạo tài khoản
+            p
+
+block content
+    .row.p-4
+        .col-md-6
+            .card
+                .card-header
+                    h3.card-title Nhập thông tin của bạn
+                form.row.card-body
+                    .col-12
+                        label(for='full_name') Địa chỉ:
+                        input#full_name.form-control(type='text' name='full_name' required)
+                    .col-12
+                        label(for='email') Địa chỉ:
+                        input#email.form-control(type='text' name='email' required)
+                    .col-6
+                        label(for='password1') Địa chỉ:
+                        input#password1.form-control(type='text' name='password1' required)
+                    .col-6
+                        label(for='password2') Địa chỉ:
+                        input#password2.form-control(type='text' name='password2' required)
+                    .col-12.py-2
+                        button.btn.btn-primary Đăng ký
+        .col-md-6
+            .card
+                .card-header
+                    h3 Hoặc đăng ký với
+                form.row.card-body.align-items-stretch
+                    .col-12
+                        button.w-100.btn.my-2 Đăng ký bằng Google
+                    .col-12
+                        button.w-100.btn.my-2 Đăng ký bằng Facebook
+                    .col-12
+                        p.w-100.pt-4.text-center Đã có tài khoản rồi ?
+                            a(href="#") Đăng nhập
+

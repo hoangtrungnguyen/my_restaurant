@@ -86,13 +86,14 @@ footer {
 }
 
 .masthead {
+    background: rgb(0,0,0);
+    background: linear-gradient(180deg, rgba(0,0,0,1) 12%, rgba(0,0,1,0) 100%);
     position: relative;
     width: 100%;
     height: auto;
-    min-height: 35rem;
+    min-height: 10rem;
     padding: 15rem 0;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.7) 75%, #000000 100%) no-repeat scroll center;
-    background-size: cover;
+    mbackground-size: cover;
 }
 
 .masthead h2 {
@@ -140,19 +141,13 @@ footer {
 .head-banner {
     padding: 15vh 0
 }
-@media (min-width: 992px) {
-    .head-banner {
-        width: 100%;
-        padding: 22vh 0;
-    }
-}
 
 .head-banner h2,.head-banner p{
     color: white;
     text-align: center;
 }
 .head-banner h2{
-    font-size: 80px;
+    font-size: 3rem;
 }
 
 .parallax {

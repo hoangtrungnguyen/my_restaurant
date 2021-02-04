@@ -1,8 +1,8 @@
 extends layout
 
-block content
+block banner
     style.
-        .first-slide{
+        .first-slide {
             background-image: url("https://images.unsplash.com/photo-1499028344343-cd173ffc68a9?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80");
         }
 
@@ -10,11 +10,12 @@ block content
             background-image: url("https://images.unsplash.com/photo-1606851686066-c7f17f1ece96?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1051&q=80");
         }
 
-        .third-slide{
+        .third-slide {
             background-image: url("https://images.unsplash.com/photo-1447078806655-40579c2520d6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80");
         }
 
     link(rel='stylesheet', href='/stylesheets/carousel.css')
+
     #myCarousel.carousel.slide(data-ride='carousel')
         ol.carousel-indicators
             li.active(data-target='#myCarousel' data-slide-to='0')
@@ -64,6 +65,8 @@ block content
         a.carousel-control-next(href='#myCarousel' role='button' data-slide='next')
             span.carousel-control-next-icon(aria-hidden='true')
             span.sr-only Next
+
+block content
     //
       Marketing messaging and featurettes
       ==================================================

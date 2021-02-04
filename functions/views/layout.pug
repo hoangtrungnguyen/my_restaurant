@@ -3,6 +3,7 @@ html
     head
         title= title
 
+        meta(name='viewport' content="width=device-width, initial-scale=1.0")
         //link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
         link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
         link( type='text/css' href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet")
@@ -11,7 +12,10 @@ html
 
     body#page-top
         - function formatBill(bill){return new Intl.NumberFormat('vi-VI', { maximumSignificantDigits: 3 }).format(bill)}
-        include partials/header
+        //include partials/header
+        .display-relative
+            include partials/header
+            block banner
         main
             block content
         include partials/footer
@@ -22,6 +26,29 @@ html
         script(src='/js/util.js')
         block script
         script.
+            // $(document).ready(() => {
+            //     var navBar = $("#navbarResponsive")
+            //
+            //     function open_side_bar() {
+            //         navBar.style.display = "block";
+            //         navBar.style.width = "block";
+            //         $("#close-sidebar-btn").style.display = 'block'
+            //     }
+            //
+            //     navBar.click(()=>{
+            //         open_side_bar()
+            //     })
+            //
+            //     function close_side_bar() {
+            //         navBar.style.display = "none";
+            //         $("#close-sidebar-btn").style.display = 'none'
+            //     }
+            //
+            //     $("#close-sidebar-btn").click(()=>{
+            //         close_side_bar()
+            //     })
+            // })
+
             (function ($) {
                 "use strict"; // Start of use strict
 
@@ -54,6 +81,8 @@ html
                     $(".navbar-collapse").collapse("hide");
                 });
 
+
+
                 // Activate scrollspy to add active class to navbar items on scroll
                 $("body").scrollspy({
                     target: "#mainNav",
@@ -62,26 +91,53 @@ html
 
                 // Collapse Navbar
                 var navbarCollapse = function () {
-                    if ($("#mainNav").offset().top > 100) {
-                        $("#mainNav").addClass("bg-dark");
+                    // console.log($(window).scrollTop())
+                    if ($(window).scrollTop() < 150) {
+                       // $("#mainNavOnScroll").addClass("d-none");
+                        $("#mainNavOnScroll").css("top", "-63px");
                     } else {
-                        if ($("#mainNav").width() > 990)
-                            $("#mainNav").removeClass("bg-dark");
-                        else
-                            $("#mainNav").addClass("bg-dark");
-
+                        // $("#mainNavOnScroll").removeClass("d-none");
+                        $("#mainNavOnScroll").css("top", "0");
                     }
                 };
+                var resizeListen = () => {
+                    if ($(window).width() < 769) {
+                        $("#mainNav").addClass("d-none");
 
+                        $("#mainNavOnScroll").addClass("d-none");
+
+                        $("#mainNavReponsive").removeClass('d-none')
+                    } else {
+                        $("#mainNav").removeClass("d-none");
+
+                        $("#mainNavOnScroll").removeClass("d-none");
+
+                        $("#mainNavReponsive").addClass('d-none')
+                    }
+                }
+                resizeListen()
                 // Collapse now if page is not at top
                 navbarCollapse();
                 // Collapse the navbar when page is scrolled
                 $(window).scroll(navbarCollapse);
-                $(window).resize(() => {
-                    if ($("#mainNav").width() < 990) {
-                        $("#mainNav").addClass("bg-dark");
-                    } else {
-                        $("#mainNav").removeClass("bg-dark");
-                    }
-                })
+                $(window).resize(resizeListen)
+
+
             })(jQuery); // End of use strict
+
+
+            // $(document).ready(() => {
+            //     window.onscroll = function () {
+            //         scrollFunction()
+            //     };
+            //
+            //     function scrollFunction() {
+            //         if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            //             $("#mainNavOnScroll").css("top", "0");
+            //         } else {
+            //             $("#mainNavOnScroll").css("top", "-50px");
+            //         }
+            //     }
+            // })
+
+

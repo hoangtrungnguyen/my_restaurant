@@ -1,15 +1,16 @@
 extends ../layout
 
-block content
+block banner
     .parallax#blog-banner
         div.container-fluid.head-banner
             h2 Blog
             p Chia sẻ kiến thức, kinh nghiệm
-    .container
+
+block content
+    .container.pt-4
         .row
             // Blog Entries Column
             .col-md-8
-                h1.my-4.pb-4 Blog
                 for post in blogs
                     // Blog Post
                     .card.mb-4
