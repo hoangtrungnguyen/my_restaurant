@@ -5,6 +5,7 @@ import MenuPage from "@/view/MenuPage";
 import BlogPage from "@/view/BlogPage";
 import FoodDetails from "../view/FoodDetails";
 import CartPage from "../view/CartPage";
+import CheckoutPage from "../view/CheckoutPage";
 
 Vue.use(Router)
 
@@ -28,10 +29,15 @@ export default new Router(
       name: "Blog",
       component: BlogPage
     },
+  {
+    path: '/cart',
+    name: "Giỏ hàng",
+    component: CartPage
+  },
     {
-      path: '/cart',
-      name: "Giỏ hàng",
-      component: CartPage
+      path: '/checkout',
+      name: "Thanh toán",
+      component: CheckoutPage
     },
     {
       path: "/food/:id",

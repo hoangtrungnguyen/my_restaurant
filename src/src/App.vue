@@ -2,7 +2,7 @@
   <div id="app">
     <navigation/>
     <main>
-      <router-view v-bind:count="count" :updateCount="updateCount"/>
+      <router-view v-bind:final_order="final_order" v-bind:count="count" :updateCount="updateCount"/>
     </main>
     <bottom-navigation/>
   </div>
@@ -39,7 +39,12 @@ export default {
   components: {Navigation,BottomNavigation},
   data: function (){
     return {
-      count: 0
+      count: 0,
+      final_order: {
+        bill_method: "CASH",
+        note:"",
+        orders:[]
+      }
     }
   },
   methods:{
@@ -47,6 +52,7 @@ export default {
       let cart = this.$session.get('cart')
       let cart_count = 0
       for (const property in cart) {
+        if(property === 'note'){continue}
         if (cart.hasOwnProperty(property)) {
           cart_count += parseInt(cart[property].count)
         }
@@ -75,5 +81,8 @@ export default {
   color: #2c3e50;
 }
 
+main{
+  background-color: #eceaea
+}
 
 </style>

@@ -26,8 +26,9 @@
                   <img alt="Ảnh" class="image-food" v-bind:src="food.image_url"/>
                   <div class="overlay"></div>
                   <div class="button">
-                    <b-btn v-if="!isInCart(food)" v-on:click.prevent="addAnOrder(food)" class="btn-primary">Thêm vào giỏ</b-btn>
-                    <router-link to="/cart" v-if="isInCart(food)" class="btn btn-primary">Đi đến giỏ </router-link>
+<!--                    <b-btn v-if="!isInCart(food)" v-on:click.prevent="addAnOrder(food)" class="btn-primary">Thêm vào giỏ</b-btn>-->
+<!--                    <router-link to="/cart" v-if="isInCart(food)" class="btn btn-primary">Đi đến giỏ </router-link>-->
+                    <router-link v-bind:to="'/food/'+food.id" class="btn btn-dark">Thêm sản phẩm</router-link>
                   </div>
                 </div>
 

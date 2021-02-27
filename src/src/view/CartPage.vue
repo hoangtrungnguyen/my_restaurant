@@ -1,5 +1,5 @@
 <template>
-  <main style="background-color: #eceaea">
+  <main>
     <div id="blog-banner" class="parallax">
       <b-container fluid class="head-banner">
         <h2>Giỏ hàng</h2>
@@ -25,18 +25,6 @@
                        v-bind:key="order.orderId" v-bind:order="order" v-for="order in orders"/>
 
           </b-container>
-          <b-container fluid>
-            <b-card class="my-4">
-              <h4 class="text-left">Lưu ý chung:</h4>
-              <hr>
-              <b-card-body>
-
-                <textarea rows="5" id="note" class="form-control"
-                          placeholder="VD: Không thìa, không được để xe ngoài đường, mang nước xát khuẩn, v..v..">
-              </textarea>
-              </b-card-body>
-            </b-card>
-          </b-container>
         </b-col>
         <b-col cols="12" lg="4" class="pt-4 pt-md-0">
           <!--          .card-->
@@ -47,7 +35,7 @@
           <!--          h6.card-subtitle Thời gian vận chuyển:-->
           <!--          p.pl-3.card-text 22:00 phút-->
           <!--          small (dự kiến)-->
-          <b-container fluid class="text-left">
+          <b-container fluid class="text-left py-4">
             <b-card>
               <h4>
                 Tóm tắt đơn hàng:
@@ -56,7 +44,13 @@
               <b-card-body>
                 <b-row class="justify-content-between">
                   <b-col>
-                    <h5>Giao hàng</h5>
+                    <h6>Đồ ăn</h6>
+                  </b-col>
+                  <p>{{ totalPrice - shippingFee | formatBill }} VND</p>
+                </b-row>
+                <b-row class="justify-content-between">
+                  <b-col>
+                    <h6>Giao hàng</h6>
                     <small>Thời gian vận chuyển: ~15 phút</small>
                   </b-col>
                   <p>{{ shippingFee | formatBill }} VND</p>
@@ -66,6 +60,9 @@
                   <h5>Thành tiền:</h5>
                   <p>{{ totalPrice | formatBill }} VND </p>
                 </b-row>
+                <div v-on:click="checkOut" class="btn btn-outline-danger w-100">
+                  Tiến hành thanh toán
+                </div>
               </b-card-body>
 
             </b-card>
@@ -113,7 +110,8 @@ import CartItem from "../components/widgets/CartItem";
 export default {
   name: "CartPage",
   props: {
-    updateCount: {type: Function}
+    updateCount: {type: Function},
+    final_order: {type: Object}
   },
   components: {
     "cart-item": CartItem
@@ -121,7 +119,8 @@ export default {
   data: function () {
     return {
       orders: [],
-      shippingFee: 15000
+      shippingFee: 15000,
+      note: ""
     }
   },
   methods: {
@@ -139,6 +138,10 @@ export default {
         // this.$router.go()
         this.updateCount()
       }
+    },
+    checkOut: function(){
+      this.final_order.orders = this.orders
+      this.$router.push("checkout")
     }
   },
   created() {

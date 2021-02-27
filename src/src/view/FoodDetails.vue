@@ -67,7 +67,8 @@
                          style="padding-right: 0">
                 </b-col>
                 <b-col cols="9">
-                  <b-btn v-on:click="addAnOrder(food, order.count, order.toppings,order.size)" id="add-btn" class="btn-primary w-100">
+                  <b-btn v-on:click="addAnOrder(food, order.count, order.toppings,order.size)"
+                         id="add-btn" class="btn-primary w-100">
                     <b-row class="justify-content-between px-3">
                       <span class="" id="bill">
                         {{ billPerUnit | formatBill }}VND / suất
@@ -96,7 +97,7 @@ import addToCartMixin from "../mixin/addToCartMixin";
 export default {
   name: "FoodDetails",
   props: {
-    'updateCount':{type:Function}
+    'updateCount': {type: Function}
   },
   data: function () {
     return {
@@ -104,25 +105,30 @@ export default {
       food: {},
       toppings: [],
       order: {
-        size:1,
+        size: 1,
         count: 1,
         toppings: []
       }
     }
   },
   methods: {
-      addAnOrder: function(food, count, toppings,size){
-        this.addToCart(food, count, toppings,size)
-        this.updateCount()
-      }
+    addAnOrder: function (food, count, toppings, size) {
+      this.addToCart(food, count, toppings, size)
+      this.updateCount()
+      this.clean()
+    },
+    clean: function () {
+      this.order = {size: 1, count: 1, toppings: []}
+      window.scrollTo({top: 0, behavior: "smooth"});
+    }
   },
-  mixins:[
-     addToCartMixin
+  mixins: [
+    addToCartMixin
   ],
   computed: {
     billPerUnit: function () {
       let bill = parseInt(this.food.price) + 10000 * (this.order.size - 1)
-      for (let i=0;i <this.order. toppings.length; i++) {
+      for (let i = 0; i < this.order.toppings.length; i++) {
         const topping = this.order.toppings[i]
         if (topping.hasOwnProperty('price'))
           bill += parseInt(topping['price'])

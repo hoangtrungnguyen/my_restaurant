@@ -1,7 +1,6 @@
 export default {
   methods: {
     addToCart: function (food, count, toppings,size) {
-      console.log('count', count)
       const foodId = food.id
       size = parseInt(size)
 
@@ -55,7 +54,6 @@ export default {
         }
         this.$session.set('cart', cart)
       }
-      console.log(this.$session.get('cart'))
       if(this.updateCount())
         this.updateCount()
     },
