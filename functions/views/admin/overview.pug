@@ -1,7 +1,38 @@
 extends admin_base
 
 block content
-    h1 Tổng quan
-    p Đơn hàng
-    p tình hình tài chính
-    p số lượng người dùng
+    .container-fluid
+        h1 Tổng quan
+        .container-fluid.py-4
+            h3.text-primary Đơn hàng mới
+            table(style='width=100%; min-width:500px')#order-list.display
+                    thead
+                        tr
+                            th STT
+                            th Tên người đặt
+                            th SĐT
+                            th Thời gian tạo
+                            th Địa chỉ
+                            th Giá trị đơn (VND)
+                            th Trạng thái
+                            th
+
+                    tbody
+                        for order,index in latest_orders
+                            tr
+                                td= index + 1
+                                td= order.full_name
+                                td= order.phone
+                                td= order.time_created.toLocaleString("vi-Vi", {timeZone: "Asia/Ho_Chi_Minh"})
+                                td= order.address
+                                td= formatBill(order.total_bill)
+                                td= order.status
+                                td
+                                    a(href=`/admin/order/${order.id}`) Chi tiết
+
+block script
+    script(src='//cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js')
+    script.
+        $(document).ready(function () {
+            $('#order-list').DataTable();
+        });

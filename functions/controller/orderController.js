@@ -13,6 +13,7 @@ const {body, validationResult} = require("express-validator");
 //      orderId : {
 //          foodId: 111
 //          count: 1,
+//          size: 1,
 //          note: "",
 //          orderId: orderId,
 //          name: "name",
@@ -241,10 +242,12 @@ exports.remove_an_order = (req, res) => {
 }
 
 exports.submit_order = [
+    //TODO checking if is authenticated
+    // if is authen add to history
+    // else ask if want to log-in or register
     (req, res, next) => {
         console.log("Submit Order")
-
-
+        const uid = req.cookies.uid ? req.cookies.uid : ""
         const cart = req.session.cart
 
         function isEmpty(obj) {
@@ -267,6 +270,7 @@ exports.submit_order = [
             await ref.set(
                 {
                     // session_order_items,
+                    uid: uid,
                     full_name: req.body.fullName,
                     phone: req.body.phone,
                     address: req.body.address,
@@ -384,11 +388,10 @@ async function getFood(foodId) {
 }
 
 exports.submitted = (req, res) => {
-    res.render("submitted")
+    res.render("submitted", {message: "Chúng tôi sẽ gọi điện xác nhận đơn hàng của bạn trong vòng 5 phút nữa"})
 }
 
-/// for admin ///
-
+/** for admin **/
 
 /// Admin order list ///
 exports.order_list = function (req, res, next) {

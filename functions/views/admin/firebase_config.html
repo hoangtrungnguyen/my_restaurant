@@ -4,6 +4,8 @@
 <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
 <script src="https://www.gstatic.com/firebasejs/8.2.4/firebase-analytics.js"></script>
+<!-- Add Firebase products that you want to use -->
+<script src="https://www.gstatic.com/firebasejs/8.2.6/firebase-auth.js"></script>
 
 <script>
     // Your web app's Firebase configuration
@@ -19,7 +21,6 @@
     };
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-    // Get a reference to the storage service, which is used to create references in your storage bucket
-    const storage = firebase.storage();
+    firebase.auth().languageCode = 'vi';
+    // firebase.auth().settings?.isAppVerificationDisabledForTesting = true
 </script>

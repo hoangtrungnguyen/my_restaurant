@@ -1,0 +1,31 @@
+extends layout
+
+block banner
+    .parallax#cart-banner
+        div.container-fluid.head-banner
+            h2 Liên hệ
+            p
+
+block content
+    .container-fluid
+        h3.py-2 Liên hệ chúng tôi
+        .row
+            .col-md-6
+                .p-1
+                    .card
+                        .card-body.text-muted
+                            p Số điện thoại: 0912345678
+                            p Hòm thư: shopName@gmail.com
+                            p Địa chỉ: Hà Nội
+                            p Mạng xã hội: FB, Insta
+            .col-md-6
+                .p-1
+                    .card
+                        form.card-body(method="POST" action="/send-feed-back")
+                            label(for='full_name') Họ và tên:
+                            input#full_name.form-control(type='text' name='full_name' required)
+                            label(for='email') Email:
+                            input#email.form-control(type='email' name='email' required)
+                            label(for='message') Phản hồi:
+                            textarea#message.form-control( name='message' cols=5 required)
+                            button.mt-3.btn.btn-primary(type='submit' ) Gửi

@@ -7,36 +7,285 @@ block banner
             p
 
 block content
-    .row.p-4
-        .col-md-6
-            .card
-                .card-header
-                    h3.card-title Nhập thông tin của bạn
-                form.row.card-body
-                    .col-12
-                        label(for='full_name') Địa chỉ:
-                        input#full_name.form-control(type='text' name='full_name' required)
-                    .col-12
-                        label(for='email') Địa chỉ:
-                        input#email.form-control(type='text' name='email' required)
-                    .col-6
-                        label(for='password1') Địa chỉ:
-                        input#password1.form-control(type='text' name='password1' required)
-                    .col-6
-                        label(for='password2') Địa chỉ:
-                        input#password2.form-control(type='text' name='password2' required)
-                    .col-12.py-2
-                        button.btn.btn-primary Đăng ký
-        .col-md-6
-            .card
-                .card-header
-                    h3 Hoặc đăng ký với
-                form.row.card-body.align-items-stretch
-                    .col-12
-                        button.w-100.btn.my-2 Đăng ký bằng Google
-                    .col-12
-                        button.w-100.btn.my-2 Đăng ký bằng Facebook
-                    .col-12
-                        p.w-100.pt-4.text-center Đã có tài khoản rồi ?
-                            a(href="#") Đăng nhập
+    link(rel='stylesheet', href='/stylesheets/form.css' type='text/css')
+    .container.py-4
+        #user-info.row
+            .col-md-6
+                .card
+                    .card-header
+                        h3.card-title Nhập thông tin của bạn
+                    .card-body.font-16
+                        .col-12.p-0
+                            label.w-100(for='full_name') Họ và tên:
+                                input#full_name.form-control(type='text' name='full_name' required)
+                                span#full-name-err(aria-live="polite").error.px-3
+                        .col-12.p-0
+                            label(for='email').w-100 Email:
+                                input#email.form-control(type='text' name='email' required)
+                                span#email-err(aria-live="polite").error.px-3
+                        .row.pt-1
+                            .col-md-6
+                                label(for='password1') Mật khẩu:
+                                    input#password1.form-control(type='password' name='password1' required)
+                            .col-md-6
+                                label(for='password2') Xác nhận mật khẩu:
+                                    input#password2.form-control(type='password' name='password2' required)
+                                    //span#pw2-err(aria-live="polite").error
+                            span#pw-err(aria-live="polite").error.px-3
+                        .col-12.py-2
+                            button#btn-info.btn.btn-primary.w-100 Đăng ký
 
+            .col-md-6.pt-lg-0.pt-4
+                .card
+                    .card-header
+                        h3 Hoặc đăng ký với
+                    form.row.card-body.align-items-stretch
+                        .col-12
+                            button.w-100.btn.my-2 Đăng ký bằng Google
+                        //.col-12
+                        //    button.w-100.btn.my-2 Đăng ký bằng Facebook
+                        .col-12
+                            p.w-100.pt-4.text-center Đã có tài khoản rồi ?
+                                a(href="/log-in") Đăng nhập
+        #phone-auth.d-none
+            .card
+                .card-header
+                    h3 Xác thực số điện thoại
+                .car-body
+                    .form-control.font-16
+                        .col
+                            label(for='phone') Số điện thoại:
+                            .row.prj-px-15
+                                input.p-0.m-0.font-14.col-1.form-control(readonly=true value="+84")
+                                input#phone.col-8.form-control(type='phone' name='phone' required)
+                                button()#send-code.col-3.form-control.btn.btn-primary Nhận mã
+                            div#recaptcha-container
+                        .col
+                            label(for='code').w-100 Xác nhận mật khẩu:
+                                input#code.form-control(readonly=true type='number' maxlength=6 name='code')
+                            span#code-err(aria-live="polite").error.px-3
+                        button#confirm-code.btn.btn-primary.my-4.w-50.p-auto(type="submit") Xác nhận
+        include ../partials/modal
+block script
+    script.
+        $(document).ready(() => {
+            const auth = firebase.auth()
+
+
+            const full_name = $("#full_name")
+            const email = $("#email")
+            const password1 = $("#password1")
+            const password2 = $("#password2")
+            const phone = $("#phone")
+            var pw_err = $("#pw-err")
+
+
+            // Sign In with phone
+            window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+            recaptchaVerifier.render().then(widgetId => {
+            //     $("#send-code").attr("disable",false)
+                window.recaptchaWidgetId = widgetId;
+            })
+
+            const sendVerificationCode = () => {
+
+                const phoneNumber = "+84" + phone.val();
+                console.log("phone ", phoneNumber)
+                const appVerifier = window.recaptchaVerifier;
+
+                auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+                    .then(confirmationResult => {
+                        const sentCodeId = confirmationResult.verificationId;
+                        // console.log("Sent code", sentCodeId)
+                        $("#code").attr("readonly", false)
+                        $("#recaptcha-container").addClass('d-none')
+                        $("#confirm-code").click((e) => {
+                            e.preventDefault()
+                            signInWithPhone(sentCodeId)
+                        });
+                        var time = 60, display = $('#send-code');
+                        startTimer(time, display)
+                    }).catch(err => {
+                    showFirebaseErrMessage(err)
+                })
+            }
+
+            const signInWithPhone = sentCodeId => {
+                (async function () {
+                    try {
+                        const code = $("#code").val();
+                        // console.log("Code input", code)
+                        const phoneCredential = firebase.auth.PhoneAuthProvider.credential(sentCodeId, code);
+                        await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+                        const credential = await auth.signInWithCredential(phoneCredential)
+                    } catch (e) {
+                        console.log(e)
+                        showFirebaseErrMessage(e)
+                        return
+                    }
+                    try {
+                        var user = firebase.auth().currentUser;
+                        await user.updateProfile({
+                            displayName: full_name.val(),
+                        })
+
+                        await user.updatePassword(password1.val())
+                        await user.updateEmail(email.val())
+                        await user.sendEmailVerification()
+                        const idToken = await user.getIdToken()
+                        var response = await fetch("/verify_id_token", {
+                            method: "POST",
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                idToken: idToken,
+                                uid:user.uid
+                            })
+                        })
+                        var json = await response.json()
+                        console.log(json)
+                            window.location.href = ("/account/profile")
+                    } catch (error) {
+                        showFirebaseErrMessage(error)
+                    }
+                })()
+
+            }
+
+            function showFirebaseErrMessage(error) {
+                console.log(error)
+                if (error.code == 'auth/invalid-verification-code') {
+                    alert("Mã OTP không chính xác")
+                } else if (error.code == 'auth/email-already-exists') {
+                    alert("Email đã được sử dụng")
+                } else if (error.code == 'auth/invalid-display-name') {
+                    alert("Tên không hợp lệ")
+                } else if (error.code == 'auth/invalid-email') {
+                    alert("Email không hợp lệ")
+                } else if (error.code == 'auth/invalid-password') {
+                    alert("Mật khẩu không hợp lệ")
+                } else if (error.code == 'auth/invalid-phone-number') {
+                    alert("Điện thoại không hợp lệ")
+                } else if( error.code =='auth/email-already-in-use'){
+                    alert("Email đã được sử dụng")
+                } else {
+                    alert(error.message)
+                }
+                window.location.reload()
+            }
+
+            $("#send-code").click(sendVerificationCode);
+
+            // -------------
+
+
+            $("#btn-info").click(() => {
+                // e.preventDefault()
+                if (pw_err.val().length === 0 && $("#email-err").val().length === 0 && $("#full-name-err").val().length === 0) {
+                    $("#phone-auth").removeClass("d-none")
+                    $("#user-info").addClass("d-none")
+                    // window.recaptchaVerifier = firebase.auth.RecaptchaVerifier('recaptcha-container')
+                    // window.recaptchaVerifier.render().then(widgetId => {
+                    //     window.recaptchaWidgetId = widgetId
+                    // })
+                }
+            })
+
+
+            // check pw
+            const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{7,}$/
+
+            password1.on('input', () => {
+                var OK = pwRegex.exec(password1.val())
+                if (password1.val() === password2.val() && OK) {
+                    pw_err.text('');
+                    pw_err.removeClass('active')
+                } else {
+                    showErrorPwInput(password1.val(), password2.val(), pw_err)
+                }
+            })
+            password2.on('input', () => {
+                var OK = pwRegex.exec(password1.val())
+                if (password1.val() === password2.val() && OK) {
+                    pw_err.text('');
+                    pw_err.removeClass('active')
+                } else {
+                    showErrorPwInput(password1.val(), password2.val(), pw_err)
+                }
+            })
+
+
+            function showErrorPwInput(pw1, pw2, errorElement) {
+                if (pw1 !== pw2) {
+                    errorElement.text('Mật khẩu không khớp');
+                    // } else if (pw2.length < 8 || pw1.length < 8) {
+                    //     errorElement.text('Mật khẩu quá ngắn');
+                } else {
+                    errorElement.text(`Mật khẩu phải có tối thiểu 8 ký tự, có ít nhất một chữ số và một chữ cái`);
+                }
+
+                // Set the styling appropriately
+                errorElement.addClass('error active');
+            }
+
+            // check email
+            email.on('input', () => {
+                const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                var OK = re.test(String(email.val()).toLowerCase());
+                var err = $("#email-err")
+                if (OK) {
+                    err.text('');
+                    err.removeClass('active')
+                } else {
+                    showErrEmail(err)
+                }
+            })
+
+            function showErrEmail(errEl) {
+                errEl.text(`Định dang không phù hợp`);
+                errEl.addClass('error active');
+            }
+
+            // check name
+            full_name.on('input', () => {
+                const re = /^.{2,}$/;
+                var OK = re.test(String(full_name.val()).toLowerCase());
+                var err = $("#full-name-err")
+                if (OK) {
+                    err.text('');
+                    err.removeClass('active')
+                } else {
+                    showNameErr(err)
+                }
+            })
+
+            function showNameErr(errEl) {
+                errEl.text(`Tên không được để trống`);
+                errEl.addClass('error active');
+            }
+
+
+            function startTimer(duration, display) {
+                display.prop('disabled', true);
+                var timer = duration, minutes, seconds;
+                var countDown = setInterval(function () {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    display.text(minutes + ":" + seconds)
+
+                    if (--timer < 0) {
+                        timer = duration;
+                        display.text("Nhận mã")
+                        display.prop('disabled', false);
+                        clearInterval(countDown)
+                    }
+                }, 1000);
+            }
+        })

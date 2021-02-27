@@ -8,9 +8,13 @@ const user_controller = require('../controller/userController');
 const order_controller = require('../controller/orderController');
 
 
-router.get('/', ((req, res) => {
-    res.render("admin/overview")
-}))
+router.get('/', async (req, res) => {
+
+
+    res.render("admin/overview",{
+        latest_orders: [],
+    })
+})
 
 
 // users Routes ///

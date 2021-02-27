@@ -62,8 +62,8 @@ block content
                                             data-title=`${food.title}`
                                             data-clicked=false
                                             data-price=food.price) Chọn
-                                .card-footer
-                                    small.text-muted ★ ★ ★ ★ ☆
+                                //.card-footer
+                                //    small.text-muted ★ ★ ★ ★ ☆
 
 block script
     script.
@@ -80,7 +80,7 @@ block script
                         console.log(isClicked)
                         e.preventDefault()
                         if (isClicked) {
-                            window.location.href = '/cart'
+                            window.location.assign('/cart')
                             return
                         }
                         // your statements;

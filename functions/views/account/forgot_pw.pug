@@ -1,0 +1,33 @@
+extends ../layout
+
+block banner
+    .parallax#cart-banner
+        div.container-fluid.head-banner
+            h2 Quên mật khẩu
+            p
+
+block content
+    .container.w-50.p-4
+        .card.px-4.pb-3
+            form.card-body.row
+                .col-12.p-0
+                    label.w-100(for='email') Email:
+                        input#email.form-control(type='email' name='email' required)
+                        span#email-err(aria-live="polite").error.px-3
+                .col-12.w-100.d-flex.flex-column.align-items-center
+                    button.btn.btn-primary.w-50(type="submit") Lấy lại mật khẩu
+
+block script
+    script.
+
+        $(document).ready(() => {
+            $("button").click((e) => {
+                firebase.auth().sendPasswordResetEmail($("#email").val()).then(
+                    value => {
+                        alert("Đã gửi email đặt lại mật khẩu")
+                    }
+                ).catch(e => {
+                    alert(e.message)
+                })
+            })
+        })

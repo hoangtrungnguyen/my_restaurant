@@ -18,6 +18,7 @@
 //
 // }
 function Order() {
+    this.uid = ''
     this.id = Date.now().toString()
     this.foods = []
     this.count = 0

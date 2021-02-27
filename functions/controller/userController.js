@@ -9,6 +9,31 @@ exports.index = function (req, res) {
     res.render('index', {title: "Trang chủ", error: null, top_blogs: top_blogs})
 
 }
+exports.feed_back_post = async (req,res,next)=>{
+    const db = admin.firestore();
+    const email = req.body.email
+    const full_name = req.body.full_name
+    const message = req.body.message
+    const uid = req.cookies.uid ? req.cookies.uid : ""
+    try{
+        const value = await db.collection('feed_back').doc().set({
+            email: email,
+            full_name: full_name,
+            message: message,
+            uid:uid
+        })
+        res.render('submitted',{
+            message:"Phản hồi của bạn đã được gửi"
+        })
+    } catch (e) {
+        res.status(400).send({
+            message: "error"
+        })
+    }
+}
+
+
+/** admin **/
 
 exports.user_list = function (req, res) {
     const user_list = []

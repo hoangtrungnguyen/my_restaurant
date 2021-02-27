@@ -46,6 +46,31 @@ style.
         top: -63px;
     }
 
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 120px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        transform: translateX(-70%);
+    }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+        margin-top: 2px;
+    }
+
+    .dropdown-content a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+    .dropdown-content a:hover{
+        color: #5a5a5a;
+    }
+
 nav#mainNav.navbar.navbar-expand-md.w-100
     .container-fluid.d-flex.justify-content-between
         a.navbar-brand.js-scroll-trigger.logo(href='#page-top') LOGO
@@ -59,7 +84,7 @@ nav#mainNav.navbar.navbar-expand-md.w-100
                 li.nav-item
                     a(class= `${title}` === "Blog" ? link_class_active:link_class href='/blog') Blog
                 li.nav-item
-                    a(class= `${title}` === "Liên hệ" ? link_class_active:link_class href='#') Liên hệ
+                    a(class= `${title}` === "Liên hệ" ? link_class_active:link_class href='/contact') Liên hệ
         ul.navbar-nav
                 li.nav-item
                     a.cart-icon(class= `${title}` === "Giỏ hàng" ? link_class_active:link_class href='/cart')
@@ -69,9 +94,17 @@ nav#mainNav.navbar.navbar-expand-md.w-100
                                     if "cart_count" in session && session.cart_count > 0
                                         | #{session.cart_count}
                                     else
-                li.account.nav-item
-                        a.cart-icon(class= `${title}` === "Tài khoản" ? link_class_active:link_class href='/register')
-                                i(aria-hidden="true").bi.bi-person
+                li
+                    //TODO Change state if is authenticated
+                    .cart-icon.account.dropdown(class= `${title}` === "Tài khoản" ? link_class_active: link_class href='/register')
+                        i(aria-hidden="true").bi.bi-person
+                        .dropdown-content
+                            if session && !session.isAuthenticated
+                                a(href="/register" style="color:black") Đăng ký
+                                a(href="/log-in" style="color:black") Đăng nhập
+                            else
+                                a(href="/account/profile" style="color:black") Cá nhân
+                                a(href="/log-out" style="color:black") Đăng xuất
 
 nav#mainNavOnScroll.navbar.navbar-expand-md.w-100.fixed-top.bg-dark
     .container-fluid.d-flex.justify-content-between
@@ -86,7 +119,7 @@ nav#mainNavOnScroll.navbar.navbar-expand-md.w-100.fixed-top.bg-dark
                 li.nav-item
                     a(class= `${title}` === "Blog" ? link_class_active:link_class href='/blog') Blog
                 li.nav-item
-                    a(class= `${title}` === "Liên hệ" ? link_class_active:link_class href='#') Liên hệ
+                    a(class= `${title}` === "Liên hệ" ? link_class_active:link_class href='/contact') Liên hệ
         ul.navbar-nav
             li.nav-item
                 a.cart-icon(class= `${title}` === "Giỏ hàng" ? link_class_active: link_class href='/cart')
@@ -96,9 +129,16 @@ nav#mainNavOnScroll.navbar.navbar-expand-md.w-100.fixed-top.bg-dark
                         if "cart_count" in session && session.cart_count > 0
                             | #{session.cart_count}
                         else
-            li.nav-item
-                a.cart-icon.account(class= `${title}` === "Tài khoản" ? link_class_active: link_class href='/register')
+            li
+                .cart-icon.account.dropdown(class= `${title}` === "Tài khoản" ? link_class_active : link_class href='/register')
                     i(aria-hidden="true").bi.bi-person
+                    .dropdown-content
+                        if session && !session.isAuthenticated
+                            a(href="/register" style="color:black") Đăng ký
+                            a(href="/log-in" style="color:black") Đăng nhập
+                        else
+                            a(href="/account/profile" style="color:black") Cá nhân
+                            a(href="/log-out" style="color:black") Đăng xuất
 
 
 
@@ -110,18 +150,23 @@ nav#mainNavReponsive.navbar.fixed-top.bg-dark
             style="color:white" )
             i(aria-hidden="true").fa.fa-bars
         a.navbar-brand.js-scroll-trigger.logo(href='#page-top') LOGO
-        .row.p-0
-            .col-6.p-0.m-0
-                a.cart-icon(style='padding: 0 0.25rem' class= `${title}` === "Giỏ hàng" ? link_class_active:link_class href='/cart')
+        .row
+            a.cart-icon.p-1(class= `${title}` === "Giỏ hàng" ? link_class_active:link_class href='/cart')
                     i(aria-hidden="true").bi.bi-bag
+                        span(class= ("cart_count" in session && session.cart_count > 0) ? ["cart-badge"]:[]).cart-count.label.label-primary
+                            if "cart_count" in session && session.cart_count > 0
+                                | #{session.cart_count}
+                            else
+            .cart-icon.account.p-1.dropdown(class= `${title}` === "Tài khoản" ? link_class_active: link_class)
+                i(aria-hidden="true").bi.bi-person
+                .dropdown-content
+                    if session && !session.isAuthenticated
+                        a(href="/register" style="color:black") Đăng ký
+                        a(href="/log-in" style="color:black") Đăng nhập
+                    else
+                        a(href="/account/profile" style="color:black") Cá nhân
+                        a(href="/log-out" style="color:black") Đăng xuất
 
-                    span(class= ("cart_count" in session && session.cart_count > 0) ? ["cart-badge"]:[]).cart-count.label.label-primary
-                        if "cart_count" in session && session.cart_count > 0
-                            | #{session.cart_count}
-                        else
-            .col-6.p-0.m-0
-                a.cart-icon.account( style='padding: 0 0.25rem' class= `${title}` === "Tài khoản" ? link_class_active:link_class href='/register')
-                    i(aria-hidden="true").bi.bi-person
 
     #navbarResponsive.collapse.navbar-collapse
         ul.navbar-nav.m-auto
@@ -133,5 +178,5 @@ nav#mainNavReponsive.navbar.fixed-top.bg-dark
             li.nav-item
                 a(class= `${title}` === "Blog" ? link_class_active:link_class href='/blog') Blog
             li.nav-item
-                a(class= `${title}` === "Liên hệ" ? link_class_active: link_class href='#') Liên hệ
+                a(class= `${title}` === "Liên hệ" ? link_class_active: link_class href='/contact') Liên hệ
 

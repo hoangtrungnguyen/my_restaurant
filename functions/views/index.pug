@@ -16,7 +16,19 @@ block banner
 
     link(rel='stylesheet', href='/stylesheets/carousel.css')
 
-    #myCarousel.carousel.slide(data-ride='carousel')
+    .carousel-item.active
+        .first-slide.parallax
+        .container
+            .carousel-caption.text-center
+                h1 Example headline.
+                p
+                    | Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id
+                    | elit non mi porta gravida at eget metus. Nullam id dolor id nibh
+                    | ultricies vehicula ut id elit.
+                p
+                    a.btn.btn-lg.btn-primary(href='#' role='button')
+                        | Đặt món
+    //#myCarousel.carousel.slide(data-ride='carousel')
         ol.carousel-indicators
             li.active(data-target='#myCarousel' data-slide-to='0')
             li(data-target='#myCarousel' data-slide-to='1')
@@ -57,8 +69,7 @@ block banner
                             | ultricies vehicula ut id elit.
                         p
                             a.btn.btn-lg.btn-primary(href='#' role='button')
-                                | Browse
-                                | gallery
+                                | Browse gallery
         a.carousel-control-prev(href='#myCarousel' role='button' data-slide='prev')
             span.carousel-control-prev-icon(aria-hidden='true')
             span.sr-only Previous

@@ -1,0 +1,186 @@
+/** Màu cho dự án **/
+:root{
+}
+
+html {
+    height: 100%;
+    box-sizing: border-box;
+}
+* {
+    font-family: 'Work Sans', sans-serif;
+}
+main {
+    min-height: 100vh;
+}
+
+footer {
+    bottom: 0;
+    background: #242424;
+    right: 0;
+    left: 0;
+    padding: 1rem 1rem;
+}
+
+
+.font-20 {
+    font-size: 20px;
+}
+
+.font-16 {
+    font-size: 16px;
+}
+
+.font-14 {
+    font-size: 14px;
+}
+
+.font-12 {
+    font-size: 12px;
+}
+
+.font-10 {
+    font-size: 10px;
+}
+
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.height-0 {
+    height: 0;
+}
+
+/*** Nav bar style ***/
+
+
+/*LOGO brand position */
+.logo {
+    right: 50%;
+    top: 1rem;
+    /*transform: translateY(-50%);*/
+    margin-right: 0;
+    color: white;
+}
+
+.logo:hover {
+    color: white;
+}
+
+
+/*Medium devices (tablets, 768px and up)*/
+@media (min-width: 768px) {
+    .logo {
+        left: 2%;
+        right: auto;
+    }
+}
+
+/*Menu style */
+#mainNav a {
+    color: white;
+}
+
+.masthead {
+    background: rgb(0,0,0);
+    background: linear-gradient(180deg, rgba(0,0,0,1) 12%, rgba(0,0,1,0) 100%);
+    position: relative;
+    width: 100%;
+    height: auto;
+    min-height: 10rem;
+    padding: 15rem 0;
+    background-size: cover;
+}
+
+.masthead h2 {
+    max-width: 20rem;
+    font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+    .masthead h1 {
+        font-size: 4rem;
+        line-height: 4rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .masthead {
+        height: 100vh;
+        padding: 0;
+    }
+
+    .masthead h1 {
+        font-size: 6.5rem;
+        line-height: 6.5rem;
+        letter-spacing: 0.8rem;
+    }
+
+    .masthead h2 {
+        max-width: 30rem;
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .navbar {
+        /*background-color: white;*/
+    }
+
+    .nav-item {
+        color: black;
+    }
+
+
+}
+
+.head-banner {
+    padding: 15vh 0
+}
+
+.head-banner h2,.head-banner p{
+    color: white;
+    text-align: center;
+}
+.head-banner h2{
+    font-size: 3rem;
+}
+
+.parallax {
+    /* Full height */
+    height: 100%;
+
+    /* Create the parallax scrolling effect */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+#menu-banner{
+    /* The image used */
+    background-image: url('https://images.unsplash.com/photo-1601625618547-bb78b496298e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80');
+}
+
+#blog-banner{
+    /* The image used */
+    background-image: url('https://images.unsplash.com/photo-1591484288126-2d6dcce81071?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80');
+}
+
+#cart-banner{
+    /* The image used */
+    background-image: url('https://images.unsplash.com/photo-1561954468-49af576e1d7d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80');
+}
+
+
+.prj-pr-15{
+    padding-right: 15px;
+}
+.prj-pl-15{
+    padding-right: 15px;
+}
+
+.prj-px-15{
+    padding-right: 15px;
+    padding-left: 15px;
+}

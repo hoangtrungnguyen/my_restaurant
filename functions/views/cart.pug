@@ -53,10 +53,9 @@ block content
                             p.pl-3.card-text 22:00 phút
                                 small (dự kiến)
                     .card.my-4
-                        h5.card-header Thông tin khách hàng
+                        h5.card-header Thông tin người nhận
                         .card-body
                             form#submit-form
-                                div
                                     label(for='fullName') Họ và tên:
                                     input#fullName.form-control(type='text' name='fullName' required)
                                     label(for='phone') Số điện thoại:
@@ -65,8 +64,10 @@ block content
                                     input#address.form-control(type='text' name='address' required)
                                     label(for='email') Email:
                                     input#email.form-control(type='email' name='email')
-                                button#btn-submit-order.btn.btn-primary.mt-4(style="width:100%")
-                                    | Xác nhận
+                                    button#btn-submit-order.btn.btn-primary.mt-4(style="width:100%")
+                                        | Xác nhận
+                            if session && !session.isAuthenticated
+                                    a.btn.btn-outline-primary.w-100.mt-2(href="/log-in") Đăng nhập
                             if submit_errors
                                 ul(style="color:red")
                                     for error in submit_errors
@@ -78,6 +79,7 @@ block script
 
     script.
         $(document).ready(() => {
+
             $("#btn-submit-order").click((e) => {
                 console.log("CLICKED")
                 e.preventDefault()
@@ -92,6 +94,15 @@ block script
                     "email "+email,
                     "address "+address,
                 )
+                if(
+                    fullName.length < 1 &&
+                    phone.length < 1 &&
+                    email.length < 1 &&
+                    address.length < 1
+                ){
+                    alert("Bạn phải điền đầy đủ thông tin")
+                    return
+                }
                 fetch(
                     "/cart/submit",
                     {

@@ -54,4 +54,13 @@ html
                 e.preventDefault();
                 $("#wrapper").toggleClass("toggled");
             });
+            $(document).ready(() => {
+                $("#log-out-btn").click((e) => {
+                    fetch('/log-out', {
+                        method: "GET"
+                    }).then(() => {
+                        window.location.assign('/log-in')
+                    })
+                })
 
+            })
