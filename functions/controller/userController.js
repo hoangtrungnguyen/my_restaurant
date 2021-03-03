@@ -151,3 +151,10 @@ exports.user_delete_post = function (req, res) {
 exports.user_delete_get = function (req, res) {
     res.send("Not implement")
 }
+
+exports.user_register = function (req, res) {
+    const email = req.body.email
+    // admin
+}
+
+

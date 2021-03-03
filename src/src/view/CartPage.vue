@@ -87,18 +87,19 @@ import CartItem from "../components/widgets/CartItem";
  orders:
  //  [
  //      {
-//          foodId: 111
+//          foodId: 111,
+//          food: Food Object
 //          count: 1,
 //          note: "",
 //          orderId: orderId,
 //          name: "name",
-//          price: '10000'
+//          price: 10000,
 //          size: 1, // 1 - 2 - 3
 //          toppings: [
 //                  {
-//                      topping_id: 'ID',
-//                      topping_name: 'name',
-//                      topping_price: '100000'
+//                      id: 'ID',
+//                      name: 'name',
+//                      price: 100000
 //                  },
 //                  ...
 //              ]

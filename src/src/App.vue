@@ -1,18 +1,25 @@
 <template>
   <div id="app">
-    <navigation/>
+    <navigation v-if="!adminPage"/>
     <main>
-      <router-view v-bind:final_order="final_order" v-bind:count="count" :updateCount="updateCount"/>
+      <router-view v-bind:final_order="final_order"
+                   v-bind:count="count"
+                   v-bind:userProfile="userProfile"
+                   :updateCount="updateCount"
+                   :setUserProfile="setUserProfile"
+      />
     </main>
-    <bottom-navigation/>
+    <bottom-navigation v-if="!adminPage"/>
   </div>
 </template>
 
 <script>
 import Navigation from "./components/widgets/Navigation";
 import BottomNavigation from "./components/widgets/BottomNavigation";
+import {auth} from "./model/db";
+
 /*** cart model in session
-//  {
+ //  {
 //      orderId : {
 //          foodId: 111
 //          food: Food Object
@@ -36,23 +43,30 @@ import BottomNavigation from "./components/widgets/BottomNavigation";
  ***/
 export default {
   name: 'App',
-  components: {Navigation,BottomNavigation},
-  data: function (){
+  components: {Navigation, BottomNavigation},
+  data: function () {
     return {
       count: 0,
+      userProfile: {},
       final_order: {
         bill_method: "CASH",
-        note:"",
-        orders:[]
-      }
+        note: "",
+        orders: []
+      },
+      authUser: null
     }
   },
-  methods:{
-    updateCount: function (){
+  methods: {
+    setUserProfile: function (userProfile) {
+      this.userProfile = userProfile
+    },
+    updateCount: function () {
       let cart = this.$session.get('cart')
       let cart_count = 0
       for (const property in cart) {
-        if(property === 'note'){continue}
+        if (property === 'note') {
+          continue
+        }
         if (cart.hasOwnProperty(property)) {
           cart_count += parseInt(cart[property].count)
         }
@@ -61,8 +75,13 @@ export default {
       // console.log(this.count)
     }
   },
-  created(){
-      this.updateCount()
+  created() {
+    this.updateCount()
+  },
+  computed:{
+    adminPage:function(){
+      return this.$router.currentRoute.matched.some(route => route.meta.isAdminPage)
+    }
   }
 }
 </script>
@@ -81,8 +100,11 @@ export default {
   color: #2c3e50;
 }
 
-main{
+main {
   background-color: #eceaea
+}
+label{
+  font-weight: 600;
 }
 
 </style>

@@ -9,12 +9,16 @@
           <navigation-links :textWhite="true"></navigation-links>
         </div>
         <ul class="navbar-nav">
-          <b-nav-item class="nav-item"><router-link class="cart-icon" to="/cart" exact>
-            <b-icon-bag-fill font-scale="0.75"/>
-            <span class="font-14">{{ countItem }}</span>
-          </router-link></b-nav-item>
-          <b-nav-item class="cart-icon account dropdown" href="/register">
-            <b-icon-person font-scale="0.75"/>
+          <b-nav-item class="nav-item">
+            <router-link class="cart-icon" to="/cart" exact>
+              <b-icon-bag-fill font-scale="0.8"/>
+              <span class="font-14">{{ countItem }}</span>
+            </router-link>
+          </b-nav-item>
+          <b-nav-item>
+            <router-link exact class="" v-bind:to="isAuthenticated ? '/account': '/authenticate'" href="">
+              <b-icon-person class="text-white" font-scale="0.8"/>
+            </router-link>
           </b-nav-item>
         </ul>
       </b-container>
@@ -33,11 +37,13 @@
         <ul class="navbar-nav">
           <b-nav-item class="nav-item">
             <router-link class="cart-icon" to="/cart" exact>
-            <b-icon-bag-fill font-scale="0.75"/>
+            <b-icon-bag-fill font-scale="0.8"/>
               <span class="font-14">{{ countItem }}</span>
           </router-link></b-nav-item>
-          <b-nav-item class="cart-icon account dropdown" href="/register">
-            <b-icon-person font-scale="0.75"/>
+          <b-nav-item>
+            <router-link exact class="" v-bind:to="isAuthenticated ? '/account': '/authenticate'" href="">
+              <b-icon-person class="text-white" font-scale="0.8"/>
+            </router-link>
           </b-nav-item>
         </ul>
       </b-container>
@@ -58,10 +64,10 @@
             </router-link>
             <span class="font-14 text-white">{{ countItem }}</span>
           </div>
-          <div class="account dropdown pl-2 pr-4" href="/register">
-            <a href="">
-              <b-icon-person class="text-white" font-scale="1.2"/>
-            </a>
+          <div class="account dropdown pl-2 pr-4">
+              <router-link exact class="" v-bind:to="isAuthenticated ? '/account': '/authenticate'" href="">
+                <b-icon-person class="text-white" font-scale="1.2"/>
+              </router-link>
           </div>
         </b-row>
 
@@ -77,6 +83,7 @@
 <script>
 import {BIconBagFill, BIconPerson} from 'bootstrap-vue'
 import NavigationLinks from "./navigation/NavigationLinks";
+import {auth} from "../../model/db";
 
 export default {
   name: "Navigation",
@@ -93,6 +100,7 @@ export default {
       limitPosition: 50,
       scrolled: false,
       isMdScreen: true,
+      isAuthenticated: false
     }
   },
   mounted() {
@@ -122,6 +130,15 @@ export default {
       this.lastPosition = window.scrollY;
       // this.scrolled = window.scrollY > 250;
     },
+  },
+  created() {
+    auth.onAuthStateChanged(user =>{
+      if(user){
+        this.isAuthenticated = true
+      } else {
+        this.isAuthenticated = false
+      }
+    })
   },
   computed:{
     countItem: function (){
