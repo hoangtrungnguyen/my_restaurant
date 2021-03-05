@@ -1,6 +1,6 @@
 //TODO thêm các trường cỡ, thành phần, ảnh nhỏ
 export  default function Food(title,price,description){
-  this.id =  Date.now().toString()
+  this.id =  ''
   this.title = title
   this.price = price
   this.image_url = ''

@@ -1,6 +1,7 @@
 <template>
-<div>
-  <h2>Blog</h2>
+<div class="text-left">
+<!--  <h2>Blog</h2>-->
+  <router-view/>
 </div>
 </template>
 

@@ -21,24 +21,40 @@
             <b-row class="mx-0 my-4">
               <b-col lg="4" class="align-content-center" sm="6" v-bind:key="food.id"
                      v-for="food in foods">
-                <div class="image-wrapper">
+<!--                <div class="image-wrapper">-->
 
-                  <img alt="Ảnh" class="image-food" v-bind:src="food.image_url"/>
-                  <div class="overlay"></div>
-                  <div class="button">
-<!--                    <b-btn v-if="!isInCart(food)" v-on:click.prevent="addAnOrder(food)" class="btn-primary">Thêm vào giỏ</b-btn>-->
-<!--                    <router-link to="/cart" v-if="isInCart(food)" class="btn btn-primary">Đi đến giỏ </router-link>-->
-                    <router-link v-bind:to="'/food/'+food.id" class="btn btn-dark">Thêm sản phẩm</router-link>
-                  </div>
-                </div>
+<!--                  <img alt="Ảnh" class="image-food" v-bind:src="food.image_url"/>-->
+<!--                  <div class="overlay"></div>-->
+<!--                  <div class="button">-->
+<!--&lt;!&ndash;                    <b-btn v-if="!isInCart(food)" v-on:click.prevent="addAnOrder(food)" class="btn-primary">Thêm vào giỏ</b-btn>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <router-link to="/cart" v-if="isInCart(food)" class="btn btn-primary">Đi đến giỏ </router-link>&ndash;&gt;-->
+<!--                    <router-link v-bind:to="'/food/'+food.id" class="btn btn-dark">Thêm sản phẩm</router-link>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <b-row style="max-width: 320px" class="justify-content-between px-4 pt-1">-->
+<!--                  <h4>-->
+<!--                    <router-link v-bind:to="`/food/${food.id}`">{{ food.title }}</router-link>-->
+<!--                  </h4>-->
+<!--                  <p><small>{{ food.price | formatBill }}VND</small></p>-->
+<!--                </b-row>-->
 
-                <b-row style="max-width: 320px" class="justify-content-between px-4 pt-1">
-                  <h4>
-                    <router-link v-bind:to="`/food/${food.id}`">{{ food.title }}</router-link>
-                  </h4>
-                  <p><small>{{ food.price | formatBill }}VND</small></p>
-                </b-row>
 
+                <b-card
+                  v-bind:img-src="food.image_url"
+                  img-alt="Image"
+                  img-top
+                  tag="article"
+                  style="max-width: 20rem;"
+                  class="mb-2">
+                  <b-card-title><router-link v-bind:to="`/food/${food.id}`" >{{food.title}}</router-link></b-card-title>
+                  <!--              <b-card-text>{{ food.title }}</b-card-text>-->
+                  <b-button  v-if="food.remains > 0 " v-bind:to="`/food/${food.id}`" href="#" variant="dark">
+                   {{  "Đặt món"}}
+                  </b-button>
+                  <b-button v-if="food.remains < 1 " variant="outline-danger">
+                    Hết hàng
+                  </b-button>
+                </b-card>
               </b-col>
             </b-row>
           </b-col>
@@ -56,6 +72,7 @@ import BottomNavigation from "../components/widgets/BottomNavigation";
 import {db} from '../model/db'
 
 import addToCartMixin from "../mixin/addToCartMixin";
+import Food from "../model/food";
 
 export default {
   name: "MenuPage",
@@ -96,13 +113,8 @@ export default {
   created() {
     db.collection('food').get().then((value) => {
       this.foods = value.docs.map((doc) => {
-        let food = {}
+        let food = doc.data(Food)
         food.id = doc.id
-        food.image_url = doc.data().image_url
-        food.title = doc.data().title
-        food.price = doc.data().price
-        food.description = doc.data().description
-        food.ref = doc.ref
         return food
       })
     })

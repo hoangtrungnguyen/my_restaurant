@@ -27,6 +27,11 @@ import AdminFoodCreate from "../components/admin/AdminFoodCreate";
 import AdminFoodList from "../components/admin/AdminFoodList";
 import AdminFoodTopping from "../components/admin/AdminFoodTopping";
 import AdminFoodView from "../components/admin/AdminFoodView";
+import AdminBlogList from "../components/admin/AdminBlogList";
+import AdminBlogView from "../components/admin/AdminBlogView";
+import ErrorPage from "../view/ErrorPage";
+import AdminBlogCreate from "../components/admin/AdminBlogCreate";
+import BlogSinglePage from "../view/BlogSinglePage";
 
 Vue.use(Router)
 
@@ -49,6 +54,11 @@ const router = new Router(
         path: '/blog',
         name: "Blog",
         component: BlogPage
+      },
+      {
+        path: '/blog/:id',
+        name: "Blog",
+        component: BlogSinglePage
       },
       {
         path: '/cart',
@@ -88,6 +98,10 @@ const router = new Router(
         component: ForgotPasswordPage,
       },
       {
+        path: "/error",
+        component: ErrorPage
+      },
+      {
         path: "/account",
         component: AccountPage,
         children: [
@@ -120,6 +134,13 @@ const router = new Router(
         //https://github.com/vuejs/vue-router/issues/704
         path: "/admin",
         component: AdminPage,
+        beforeEnter: (to, from, next) => {
+          if (!auth.currentUser) {
+            next('/error')
+          } else {
+            next()
+          }
+        },
         meta: {
           isAdminPage: true,
           //TODO checking permission here
@@ -139,8 +160,24 @@ const router = new Router(
           },
           {
             path: "blog",
-            name: "admin.blog",
             component: AdminBlog,
+            children:[
+              {
+                path:'',
+                name: "admin.blog",
+                component: AdminBlogList
+              },
+              {
+                path: "create",
+                name: "admin.blog.creat",
+                component: AdminBlogCreate,
+              },
+              {
+                path: ":id",
+                name: "admin.blog.view",
+                component: AdminBlogView,
+              },
+            ]
           },
           {
             path: "order",
@@ -162,16 +199,17 @@ const router = new Router(
                 name: "admin.food",
                 component: AdminFoodList
               },
-              // {
-              //   path:':id',
-              //   name: "admin.food.view",
-              //   component: AdminFoodView
-              // },
               {
                 path: "create",
                 name: "admin.food.create",
                 component: AdminFoodCreate,
               },
+              {
+                path:':id',
+                name: "admin.food.view",
+                component: AdminFoodView
+              },
+
               {
                 path:'topping/create',
                 name: "admin.food.topping",

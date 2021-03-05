@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2>Danh sách > Topping</h2>
     <b-card>
       <b-card-title>
         Danh sách đồ ăn kèm (toppings)

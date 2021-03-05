@@ -3,6 +3,8 @@ import 'firebase/firestore'
 import 'firebase/auth'
 import 'firebase/storage'
 
+export const bucketName = "restaurant-56248.appspot.com";
+
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {

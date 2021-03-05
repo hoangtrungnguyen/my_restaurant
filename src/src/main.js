@@ -68,6 +68,15 @@ Vue.filter('shortenSentence',function(sentence){
   return sentence.substring(0,50) +" ..."
 })
 
+Vue.filter('sizeFormat',function(size){
+  switch (size){
+    case 1: return "Nhỏ"
+    case 2: return "Vừa"
+    case 3: return "Lớn"
+    default: return "Unknown size"
+  }
+})
+
 auth.onAuthStateChanged(function(user) {
   new Vue({
     el: '#app',

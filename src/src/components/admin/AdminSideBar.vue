@@ -19,7 +19,16 @@
                 </li>
               </ul>
       </li>
-      <li><router-link exact to="/admin/blog">Blog</router-link></li>
+      <li><a href="#blogSubmenu" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle">Blogs</a>
+        <ul class="collapse list-unstyled" id="blogSubmenu">
+          <li>
+            <router-link to="/admin/blog" exact href="#">Danh sách</router-link>
+          </li>
+          <li>
+            <router-link to="/admin/blog/create" exact href="#">Tạo</router-link>
+          </li>
+        </ul>
+      </li>
 
 
       <!--    <li class="active">-->

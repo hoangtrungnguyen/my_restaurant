@@ -2,7 +2,7 @@
 <div class="text-left">
   <router-view/>
   <b-card class="my-2">
-    <router-link exact to="/admin/food/create" class="btn btn-dark">Tạo sản phẩm</router-link>
+    <router-link exact to="/admin/food/" class="btn btn-dark">Sản phẩm chính</router-link>
     <router-link exact to="/admin/food/topping/create" class="btn btn-dark">Tạo/Sửa topping</router-link>
 <!--    <router-link exact to="/admin/food/" class="btn btn-dark">Danh sách sản phẩm</router-link>-->
   </b-card>

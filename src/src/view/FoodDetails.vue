@@ -34,7 +34,7 @@
             </b-col>
           </b-col>
           <b-col md="6">
-            <h3 class="pt-md-0 pt-4">{{ food.title }}</h3>
+            <h3 class="pt-md-0 pt-4">{{ food.title }} <small class="text-danger" v-if="food.remains < 1">(Hết hàng)</small></h3>
             <p class="text-dark text-left">{{ food.description }}</p>
             <hr>
             <h4> {{ food.price | formatBill }} VND</h4>
@@ -91,8 +91,9 @@
 </template>
 
 <script>
-import {db} from '../model/db'
+import {db, foodCollection, toppingCollection} from '../model/db'
 import addToCartMixin from "../mixin/addToCartMixin";
+import Food from "../model/food";
 
 export default {
   name: "FoodDetails",
@@ -113,6 +114,10 @@ export default {
   },
   methods: {
     addAnOrder: function (food, count, toppings, size) {
+      if(this.food.remains < 1){
+        alert("Xin lỗi, đã hết hàng mất rồi. Hãy quay trở lại vào hôm sau.")
+        return
+      }
       this.addToCart(food, count, toppings, size)
       this.updateCount()
       this.clean()
@@ -137,20 +142,13 @@ export default {
     }
   },
   created() {
-    db.collection('food').doc(this.id).get().then((doc) => {
-      let food = {}
+    foodCollection.doc(this.id).get().then((doc) => {
+      let food = doc.data(Food)
       food.id = doc.id
-      food.description = doc.data().description
-      food.price = doc.data().price
-      food.title = doc.data().title
-      food.image_url = doc.data().image_url
-      food.image_name = doc.data().image_name
-      food.is_remaining = doc.data().is_remaining
-      food.ref = doc.ref
       this.food = food
 
     })
-    db.collection('topping').get().then((value) => {
+    toppingCollection.get().then((value) => {
       this.toppings = value.docs.map(e => {
         return {
           id: e.id,
@@ -184,5 +182,9 @@ export default {
 
 #quantity {
   margin: 0 20px;
+}
+
+label{
+  font-weight: normal;
 }
 </style>

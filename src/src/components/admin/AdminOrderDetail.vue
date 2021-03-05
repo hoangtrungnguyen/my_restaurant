@@ -24,10 +24,10 @@
         </b-button>
         <hr>
         <label for="">Nhập id đơn hàng để xóa:
-          <input class="w-100" placeholder="id đơn hàng" type="text">
+          <input v-model="deleteCode" class="w-100" placeholder="id đơn hàng" type="text">
         </label>
         <div>
-          <b-button variant="danger">Xóa đơn hàng</b-button>
+          <b-button @click="deleteOrder" variant="danger">Xóa đơn hàng</b-button>
         </div>
       </form>
     </b-card>
@@ -48,7 +48,8 @@ export default {
       orderDetailKey: 0,
       updatedInfo: {
         // status: status[0]
-      }
+      },
+      deleteCode:''
     }
   },
   methods: {
@@ -62,6 +63,16 @@ export default {
           this.$router.go(-1)
         }
 
+      })
+    },
+    deleteOrder: function(){
+      if(this.deleteCode !== this.$route.params.id){
+        alert("từ chối")
+        return
+      }
+
+      orderCollection.doc(this.$route.params.id).delete().then(ok=>{
+        this.$router.back()
       })
     }
   },

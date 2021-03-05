@@ -4,8 +4,10 @@
     <b-card-body class="p-0 pt-3">
       <b-row v-bind:key="order.orderId" v-for="order in submitted_order.orders"
              class="px-3 justify-content-between">
-        <p class="font-14">{{ order.name }} <span
-          class="font-weight-bold">x{{ order.count }}</span></p>
+        <p class="font-14">{{ order.name }}
+          <span>({{order.size | sizeFormat}})</span>
+          <span class="font-weight-bold">x{{ order.count }}</span>
+        </p>
         <p class="font-14 font-weight-bold">{{ order.price * order.count|formatBill }}</p>
       </b-row>
       <b-row class="px-3 justify-content-between">
