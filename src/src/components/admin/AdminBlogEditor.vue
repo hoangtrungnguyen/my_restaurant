@@ -2,8 +2,8 @@
   <b-container id="admin-blog-editor" fluid="true">
     <b-card>
       <b-form action="">
-<!--        <b-img-lazy  v-bind:src="imageFile" height="150" v-if="imageFile"/>-->
-        <b-img-lazy  v-bind:src="imageUrl" height="150" v-if="imageUrl"/>
+        <!--        <b-img-lazy  v-bind:src="imageFile" height="150" v-if="imageFile"/>-->
+        <b-img-lazy v-bind:src="imageUrl" height="150" v-if="imageUrl"/>
         <label class="w-100">Ảnh *
           <br><input
             ref="image"
@@ -25,7 +25,7 @@
         <vue-editor v-model="blog.content" :editorToolbar="customToolbar"></vue-editor>
 
         <b-btn variant="outline-dark" v-if="!isLoading" class="mt-3" v-on:click.prevent="create">
-          {{$route.params.id ? "Cập nhật" : "Tạo blog"}}
+          {{ $route.params.id ? "Cập nhật" : "Tạo blog" }}
         </b-btn>
         <h6 v-if="isLoading">
           Đang tạo ...
@@ -39,9 +39,10 @@
       <h2>{{ blog.title }}</h2>
       <p>{{ blog.summary }}</p>
       <hr>
-        <div class="text-center">
-          <b-img-lazy class="w-100" style="max-height:600px; max-width:900px; object-fit: cover" v-bind:src="imageUrl"></b-img-lazy>
-        </div>
+      <div class="text-center">
+        <b-img-lazy class="w-100" style="max-height:600px; max-width:900px; object-fit: cover"
+                    v-bind:src="imageUrl"></b-img-lazy>
+      </div>
 
       <div class="pt-3" v-html="blog.content"></div>
     </b-card>
@@ -49,7 +50,7 @@
 </template>
 
 <script>
-import {blogCollection, db, storage,bucketName} from "../../model/db";
+import {blogCollection, db, storage, bucketName} from "../../model/db";
 import {Blog} from "../../model/blog";
 import {VueEditor} from "vue2-editor";
 import {resizeImage} from "../../util/resize_image";
@@ -134,7 +135,7 @@ export default {
         const downloadURL = await snapshot.ref.getDownloadURL()
 
         this.imageUrl = downloadURL;
-        console.log('imageURL',this.imageUrl)
+        console.log('imageURL', this.imageUrl)
 
 
         // const bucket = storage.bucket("restaurant-56248.appspot.com");
@@ -168,21 +169,23 @@ export default {
       try {
         this.isLoading = true
 
-        if(this.$route.params.id){
+        if (this.$route.params.id) {
           await this.removeOldImage()
           await this.uploadImage()
-          if(this.imageUrl)
+          if (this.imageUrl)
             this.blog.image_url = this.imageUrl
           await blogCollection.doc(this.$route.params.id).update(
             JSON.parse(JSON.stringify(this.blog)),
           )
         } else {
           await this.uploadImage()
-          if(this.imageUrl)
+          if (this.imageUrl)
             this.blog.image_url = this.imageUrl
+          let data = JSON.parse(JSON.stringify(this.blog))
+          data.time_created = new Date()
           await blogCollection.doc().set(
-            JSON.parse(JSON.stringify(this.blog)),
-          ).then(result =>{
+            data
+          ).then(result => {
             this.reloadForm()
           })
         }
@@ -204,7 +207,7 @@ export default {
   },
   created() {
     if (this.blogId) {
-      blogCollection.doc(this.blogId).get().then(snapshot =>{
+      blogCollection.doc(this.blogId).get().then(snapshot => {
         this.blog = snapshot.data(Blog)
         this.blog.id = snapshot.id
         this.imageUrl = this.blog.image_url

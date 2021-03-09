@@ -36,7 +36,7 @@ exports.feed_back_post = async (req,res,next)=>{
 /** admin **/
 
 exports.user_list = function (req, res) {
-    const user_list = []
+    const pageToken = req.body.pageToken
     const listAllUsers = (nextPageToken) => {
         admin
             .auth()
@@ -47,12 +47,15 @@ exports.user_list = function (req, res) {
                 // listAllUsers(value.pageToken);
                 // this.user_list = this.user_list.append(users)
             }
-            res.render('admin/user_list', {title: "Trang chủ", error: null, users: users})
+            res.status(200).send({
+                users: users
+            })
+
         }))
     }
 
     // Start listing users from the beginning, 1000 at a time.
-    listAllUsers();
+    listAllUsers(pageToken);
 }
 
 exports.user_detail = function (req, res, next) {

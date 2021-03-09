@@ -4,7 +4,7 @@
               v-on:resize="onResize"
               :class="{'d-none': !isMdScreen}" id="mainNav">
       <b-container fluid class="d-flex justify-content-between"><a
-        class="navbar-brand js-scroll-trigger logo" href="#page-top">LOGO</a>
+        class="navbar-brand js-scroll-trigger logo" href="#page-top">{{ LOGO }}</a>
         <div class="collapse navbar-collapse">
           <navigation-links :textWhite="true"></navigation-links>
         </div>
@@ -30,7 +30,7 @@
               :class="{'headroom--unpinned': !scrolled, 'd-none': !isMdScreen}"
               id="mainNavOnScroll">
       <b-container fluid class="d-flex justify-content-between">
-        <a class="navbar-brand js-scroll-trigger logo text-white" href="#page-top">LOGO</a>
+        <a class="navbar-brand js-scroll-trigger logo text-white" href="#page-top">{{ LOGO }}</a>
         <div class="collapse navbar-collapse">
           <navigation-links :textWhite="true"></navigation-links>
         </div>
@@ -55,7 +55,7 @@
       <b-container fluid class="d-flex justify-content-between">
         <b-navbar-toggle class="bg-white" target="navbarResponsive"/>
 
-        <b-navbar-brand class="js-scroll-trigger logo text-white">LOGO</b-navbar-brand>
+        <b-navbar-brand class="js-scroll-trigger logo text-white">{{ LOGO }}</b-navbar-brand>
 
         <b-row>
           <div class="px-2" href="/cart">
@@ -100,12 +100,14 @@ export default {
       limitPosition: 50,
       scrolled: false,
       isMdScreen: true,
-      isAuthenticated: false
+      isAuthenticated: false,
+      LOGO: "T.C.O"
     }
   },
   mounted() {
     window.addEventListener('scroll', this.onScroll)
     window.addEventListener('resize', this.onResize)
+    this.onResize()
   },
 
   beforeDestroy() {

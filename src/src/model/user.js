@@ -8,3 +8,5 @@ function User(){
   this.displayName = ''
   this.role = []
 }
+
+

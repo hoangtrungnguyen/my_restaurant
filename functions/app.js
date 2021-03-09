@@ -1,144 +1,75 @@
-//set up package
 const functions = require("firebase-functions");
 
 const admin = require('firebase-admin')
-// Imports the Google Cloud client library
-// const {Storage} = require('@google-cloud/storage');
 
-const express = require("express"),
-    flash = require('connect-flash'),
-    session = require('express-session'),
-    toastr = require('express-toastr');
+const express = require('express');
 
-const bodyParser = require('body-parser');
-const path = require('path')
-const logger = require('morgan');
-const createError = require('http-errors');
-const cookieParser = require('cookie-parser');
-const cors = require('cors')({origin: true});
-const FirebaseStore = require('connect-session-firebase')(session);
-const pug = require('pug')
-const csrf = require("csurf");
-
-// const serviceAccount = require('./restaurant-56248.json');
-//
-const ref = admin.initializeApp({
-    databaseURL: 'https://restaurant-56248-default-rtdb.firebaseio.com/',
-    credential: admin.credential.cert('./restaurant-56248.json')
-});
-
-
-const csrfMiddleware = csrf({cookie: true});
-
-//set up using for index
-// admin.initializeApp()
 const app = express();
 
+//  admin.initializeApp({
+//     databaseURL: 'https://restaurant-56248-default-rtdb.firebaseio.com/',
+//     credential: admin.credential.cert('restaurant-56248.json')
+// });
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+admin.initializeApp()
 
-// app.use(csrfMiddleware);
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(cookieParser())
+const usersRouter = require('./routes/user');
+app.use("/api/users",usersRouter)
 
 
-let isMultipart = /^multipart\//i;
-let urlencodedMiddleware = bodyParser.urlencoded({extended: true});
-app.use(function (req, res, next) {
-    let type = req.get('Content-Type');
-    if (isMultipart.test(type)) return next();
-    return urlencodedMiddleware(req, res, next);
-});
 
-app.use(session({
-    store: new FirebaseStore({
-        database: ref.database()
-    }),
-    name: '__session',
-    secret: 'keyboard cat',
-    resave: true,
-    saveUninitialized: true,
-    cookie: {
-        maxAge: 600000,
-        secure: false,
-        httpOnly: false
+async function grantModeratorRole(email) {
+    const user = await admin.auth().getUserByEmail(email)
+    if (user.customClaims && user.customClaims.moderator === true) {
+        return
     }
-}));
-// app.use(validateFirebaseIdToken);
-app.use(cors);
-
-app.use(flash());
-
-// Load express-toastr
-// You can pass an object of default options to toastr(), see example/index.coffee
-app.use(toastr());
-
-//static file
-app.use(express.static(path.join(__dirname, 'public')));
-
-//session access
-app.use(function (req, res, next) {
-    res.locals.session = req.session;
-    next();
-});
-
-//authenticate middleware
-const authenticate = require('./service/authenticate')
-
-/* using router */
-const indexRouter = require('./routes');
-const adminRouter = require('./routes/admin');
-const accountRouter = require('./routes/account');
-const authenticateRouter = require('./routes/authenticate');
-const testRouter = require('./routes/upload');
-
-
-function privateCache(req, res, next) {
-    res.set('Cache-Control', 'private, max-age=3000, s-maxage=6000')
-    next()
+    return admin.auth().setCustomUserClaims(user.uid, {
+        moderator: true
+    })
 }
 
-app.use('/', indexRouter);
-app.use('/admin', authenticate.validateIsAdmin, adminRouter);
-app.use('/account', authenticate.validateFirebaseIdToken, privateCache, accountRouter);
-app.use('/', authenticate.isAuthenticated, authenticateRouter)
-app.use('/test', testRouter);
-
-
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    next(createError(404));
-});
-
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-    // render the error page
-    res.status(err.status || 500);
-    res.render('err/error');
-});
-
-exports.app = functions.https.onRequest(app);
-
-//set admin by id
-(async function setAdmin() {
-    try{
-        await admin.auth().setCustomUserClaims("JWF4U3H6BwfQQ4qLseWDMxlyito1", {admin: true})
-        console.log("OK")
-    } catch (e) {
-        console.log(e)
+const addModerator = functions.https.onCall(((data, context) => {
+    if (context.auth.token.moderator !== true) {
+        return {
+            error: "Request not authorized. User must be admin."
+        }
     }
-})()
 
-//comment before deploy
-// module.exports = app
+    const email = data.email
+    return grantModeratorRole(email).then(() => {
+        return {
+            message: `Granted!! ${email} is now a moderator.`
+        }
+    })
+}))
+
+// app.get('/addModerator',addModerator)
+
+
+
+
+
+/** set role **/
+
+//email nguyencua1810@gmail.com
+admin.auth().setCustomUserClaims("JWF4U3H6BwfQQ4qLseWDMxlyito1", {
+    admin: true,
+    moderator: true
+}).then(() => {
+
+})
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Listening on http://localhost:${PORT}`);
+});
+
+
+
+
+
+
 
 
 

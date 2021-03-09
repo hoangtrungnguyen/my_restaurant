@@ -31,7 +31,10 @@ export default {
   methods: {
     deleteBlog: function () {
       if (this.deleteCode !== this.id) {
-        alert("Từ chối")
+        this.$bvToast.toast("Từ chối",{
+           title: null,
+            variant: 'danger'
+        })
         return
       }
       blogCollection.doc(this.id).delete().then(result => {

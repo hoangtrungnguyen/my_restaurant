@@ -37,20 +37,31 @@
             <h3 class="pt-md-0 pt-4">{{ food.title }} <small class="text-danger" v-if="food.remains < 1">(Hết hàng)</small></h3>
             <p class="text-dark text-left">{{ food.description }}</p>
             <hr>
-            <h4> {{ food.price | formatBill }} VND</h4>
+            <h4> {{ parseInt(food.price) + ((order.size - 1) * price_per_size) | formatBill }} VND</h4>
             <hr>
-            <h5>Cỡ</h5>
+            <h5>Cỡ </h5>
             <form>
               <input type="radio" v-model="order.size" value="1">
               <label>Nhỏ</label>
               <input type="radio" checked v-model="order.size" value="2">
-              <label>Vừa</label>
+              <label>Vừa <small class="font-14">(+{{price_per_size}} vnđ)</small></label>
               <input type="radio" v-model="order.size" value="3">
-              <label>Lớn</label>
+              <label>Lớn <small class="font-14">(+{{price_per_size * 2}} vnđ)</small></label>
             </form>
             <h5 class="py-2">Topping thêm</h5>
             <form action="" id="add-topping" class="px-4">
-              <b-row class="justify-content-between" v-bind:key="topping.id"
+              <b-row v-if="topping.price > 0" class="justify-content-between" v-bind:key="topping.id"
+                     v-for="topping in toppings">
+                <span>
+                  <input type="checkbox" class="topping-checkbox" v-bind:value="topping"
+                         v-model="order.toppings">
+                  <label class="px-2">{{ topping.name }}</label>
+                  </span>
+                <p>{{ topping.price|formatBill }}VND</p>
+              </b-row>
+
+<!--              <p class="font-weight-bold">Miễn phí</p>-->
+              <b-row v-if="topping.price === 0" class="justify-content-between" v-bind:key="topping.id"
                      v-for="topping in toppings">
                 <span>
                   <input type="checkbox" class="topping-checkbox" v-bind:value="topping"
@@ -105,6 +116,7 @@ export default {
       id: this.$route.params.id,
       food: {},
       toppings: [],
+      price_per_size: 5000,
       order: {
         size: 1,
         count: 1,
@@ -115,7 +127,11 @@ export default {
   methods: {
     addAnOrder: function (food, count, toppings, size) {
       if(this.food.remains < 1){
-        alert("Xin lỗi, đã hết hàng mất rồi. Hãy quay trở lại vào hôm sau.")
+        this.$bvToast.toast('Xin lỗi, đã hết hàng mất rồi. Hãy quay trở lại vào hôm sau.', {
+          title: `Thông báo`,
+          variant: 'warning',
+          solid: true
+        })
         return
       }
       this.addToCart(food, count, toppings, size)
@@ -132,7 +148,7 @@ export default {
   ],
   computed: {
     billPerUnit: function () {
-      let bill = parseInt(this.food.price) + 10000 * (this.order.size - 1)
+      let bill = parseInt(this.food.price) + this.price_per_size * (this.order.size - 1)
       for (let i = 0; i < this.order.toppings.length; i++) {
         const topping = this.order.toppings[i]
         if (topping.hasOwnProperty('price'))

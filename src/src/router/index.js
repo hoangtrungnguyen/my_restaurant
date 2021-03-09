@@ -32,6 +32,7 @@ import AdminBlogView from "../components/admin/AdminBlogView";
 import ErrorPage from "../view/ErrorPage";
 import AdminBlogCreate from "../components/admin/AdminBlogCreate";
 import BlogSinglePage from "../view/BlogSinglePage";
+import PageNotFound from "../view/PageNotFound";
 
 Vue.use(Router)
 
@@ -57,7 +58,7 @@ const router = new Router(
       },
       {
         path: '/blog/:id',
-        name: "Blog",
+        name: "blog.view",
         component: BlogSinglePage
       },
       {
@@ -138,13 +139,19 @@ const router = new Router(
           if (!auth.currentUser) {
             next('/error')
           } else {
-            next()
+            auth.currentUser.getIdTokenResult().then(result =>{
+              if(result.claims.admin){
+                next()
+              } else {
+                next('/error')
+              }
+            })
           }
         },
         meta: {
           isAdminPage: true,
           //TODO checking permission here
-          permission: ['ADMIN','OWNER']
+          permission: ['ADMIN', 'OWNER']
         },
         children: [
           {
@@ -161,9 +168,9 @@ const router = new Router(
           {
             path: "blog",
             component: AdminBlog,
-            children:[
+            children: [
               {
-                path:'',
+                path: '',
                 name: "admin.blog",
                 component: AdminBlogList
               },
@@ -193,9 +200,9 @@ const router = new Router(
             component: AdminFood,
             // need router-view tag to work
             //https://stackoverflow.com/questions/59628964/vue-router-nested-route-not-loading-my-component-page
-            children:[
+            children: [
               {
-                path:'',
+                path: '',
                 name: "admin.food",
                 component: AdminFoodList
               },
@@ -205,26 +212,24 @@ const router = new Router(
                 component: AdminFoodCreate,
               },
               {
-                path:':id',
+                path: ':id',
                 name: "admin.food.view",
                 component: AdminFoodView
               },
 
               {
-                path:'topping/create',
+                path: 'topping/create',
                 name: "admin.food.topping",
                 component: AdminFoodTopping
               },
             ]
           },
-
-        ]
-      }
+        ],
+      },
+      { path: '/404', component: PageNotFound },
+      {path: "*", redirect: '/404'}
     ],
   })
 
-// router.beforeEach((to,from,next) =>{
-//   next()
-// })
 
 export default router

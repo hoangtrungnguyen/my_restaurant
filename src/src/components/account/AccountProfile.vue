@@ -61,7 +61,11 @@ export default {
       auth.currentUser.sendEmailVerification().then(data => {
         this.isEmailVerify = true
       }).catch(err => {
-        alert(getFirebaseErrorMessage(err))
+        let msg = getFirebaseErrorMessage(err)
+        this.$bvToast.toast(msg,{
+          title:"Thông báo",
+          variant:"danger"
+        })
       })
     },
     updateProfile: function () {

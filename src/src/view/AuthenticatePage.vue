@@ -14,12 +14,12 @@
             <h4>Đăng nhập</h4>
             <b-card-body>
               <label class="w-100">Email *
-                <br><input required placeholder="abc@email.com" class="w-100 " type="email"
+                <br><input name="email" required placeholder="abc@email.com" class="w-100 " type="email"
                            v-model="authenticateInfo.email"/>
               </label>
               <br>
               <label class="w-100">Mật khẩu *<br>
-                <input required class="w-100" type="password" v-model="authenticateInfo.password"/>
+                <input name="password" required class="w-100" type="password" v-model="authenticateInfo.password"/>
               </label>
               <br>
               <b-btn v-on:click.prevent="logIn" class="btn-dark">Đăng nhập</b-btn>
@@ -38,11 +38,11 @@
             <h4>Đăng ký</h4>
             <b-card-body>
               <label class="w-100">Email *<br>
-                <input required placeholder="abc@email.com" class="w-100" type="email"
+                <input name="email" required placeholder="abc@email.com" class="w-100" type="email"
                        v-model="registerInfo.email"/>
               </label>
               <label class="w-100">Mật khẩu *<br>
-                <input required class="w-100" type="password" v-model="registerInfo.password"/>
+                <input name="password" required class="w-100" type="password" v-model="registerInfo.password"/>
               </label>
               <label class="w-100">Xác nhận mật khẩu *<br>
                 <input required class="w-100" type="password" v-model="registerInfo.password2"/>
@@ -114,7 +114,10 @@ export default {
           const errorMessage = error.message;
           const message = getFirebaseErrorMessage(error)
           loader.hide()
-          alert(message)
+          this.$bvToast.toast(message,{
+            title:null,
+            variant:"danger"
+          })
         }).finally(() => {
           try{
             loader.hide()

@@ -2,13 +2,13 @@
   <main class="text-left">
     <div id="blog-banner" class="parallax">
       <b-container fluid class="head-banner">
-        <h2>Blog</h2>
-        <p>{{ blog.title }}</p>
+        <p class="text-muted">Blog</p>
+        <h4 class="text-center text-white">{{ blog.title }}</h4>
       </b-container>
     </div>
     <b-container class="py-4">
       <b-card>
-        <h5>{{ blog.summary }}</h5>
+        <p>{{ blog.summary }}</p>
         <hr>
         <div class="text-center">
           <b-img-lazy class="w-100" style="max-height:600px; max-width:900px; object-fit: cover"
@@ -16,6 +16,22 @@
         </div>
 
         <div class="pt-3" v-html="blog.content"></div>
+
+        <hr>
+        <div class="text-center">
+          <p>Chia sẻ:</p>
+          <v-flex align-self-center>
+            <a class="px-3">
+              <b-icon-facebook scale="1.5"/>
+            </a>
+            <a class="px-3">
+              <b-icon-share class="text-info" scale="1.5"/>
+            </a>
+            <a class="px-3" >
+              <b-icon-youtube class="text-danger" scale="1.5"/>
+            </a>
+          </v-flex>
+        </div>
       </b-card>
     </b-container>
   </main>

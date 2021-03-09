@@ -4,11 +4,9 @@
       <div class="first-slide parallax"></div>
       <div class="container">
         <div class="carousel-caption text-center">
-          <h1 class="pb-3">Tiệm cơm Tây Bắc</h1>
-          <p>
-            Những món ăn đậm chất dân tộc, sử dụng những nguyên liệu tươi ngon nhất từ vùng núi.
-          </p>
-          <p>Đặt hàng nhanh chóng, thuận tiện mà lại ngon miệng</p>
+          <h1 class="pb-3">Tiệm cơm Online</h1>
+<!--          <p>Đặt hàng nhanh chóng, thuận tiện mà lại ngon miệng</p>-->
+          <p>{{ sologan }}</p>
           <p><router-link class="btn btn-lg btn-primary" to="/menu" role="button">Đặt món</router-link></p>
         </div>
       </div>
@@ -19,6 +17,11 @@
 <script>
 export default {
   name: "banner",
+  data: function(){
+    return {
+      sologan: "Vì chúng tôi hiểu và tôn trọng đồng tiền của bạn nên bạn xứng đáng nhận được dịch vụ hoàn hảo"
+    }
+  },
   components:{
   }
 }

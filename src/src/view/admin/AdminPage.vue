@@ -21,6 +21,9 @@ import AdminSideBar from "../../components/admin/AdminSideBar";
 
 export default {
   name: "AdminPage",
+  props: {
+    setIsAdminPage: {type: Function}
+  },
   components: {
     "side-bar": AdminSideBar
   },
@@ -34,6 +37,14 @@ export default {
       this.active = !this.active
     }
   },
+  created() {
+    this.setIsAdminPage( true)
+  },
+
+  beforeDestroy() {
+    this.setIsAdminPage(false)
+  }
+
 }
 </script>
 

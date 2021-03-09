@@ -1,15 +1,27 @@
 <template>
   <div id="app">
-    <navigation v-if="!adminPage"/>
+    <navigation v-if="!isAdminPage"/>
     <main>
       <router-view v-bind:final_order="final_order"
                    v-bind:count="count"
                    v-bind:userProfile="userProfile"
+                   :setIsAdminPage="setIsAdminPage"
                    :updateCount="updateCount"
                    :setUserProfile="setUserProfile"
       />
     </main>
-    <bottom-navigation v-if="!adminPage"/>
+    <bottom-navigation v-if="!isAdminPage"/>
+
+    <b-modal ref="my-modal" hide-footer title="Chào mừng bạn !!">
+      <div class="d-block text-center">
+        <h3>Chương trình khai trương: Giảm giá đến 30%~</h3>
+      </div>
+      <b-row>
+<!--        <b-button class="mt-3" variant="outline-danger" block @click="hideModal">Đóng</b-button>-->
+        <b-button class="mt-2" variant="outline-info" block @click="toggleModal">Xem ngay</b-button>
+      </b-row>
+
+    </b-modal>
   </div>
 </template>
 
@@ -53,10 +65,27 @@ export default {
         note: "",
         orders: []
       },
-      authUser: null
+      authUser: null,
+      isAdminPage:this.$router.currentRoute.matched.some(route => route.meta.isAdminPage)
     }
   },
+  mounted() {
+    if(!this.isAdminPage)
+      this.showModal()
+  },
   methods: {
+    showModal() {
+      this.$refs['my-modal'].show()
+    },
+    hideModal() {
+      this.$refs['my-modal'].hide()
+    },
+    toggleModal() {
+      // We pass the ID of the button that we want to return focus to
+      // when the modal has hidden
+      this.$refs['my-modal'].toggle('#toggle-btn')
+      this.$router.push("/blog")
+    },
     setUserProfile: function (userProfile) {
       this.userProfile = userProfile
     },
@@ -73,15 +102,19 @@ export default {
       }
       this.count = cart_count
       // console.log(this.count)
+    },
+    setIsAdminPage:function(value){
+      this.isAdminPage = value
     }
   },
   created() {
     this.updateCount()
   },
+  watch:{
+
+  },
   computed:{
-    adminPage:function(){
-      return this.$router.currentRoute.matched.some(route => route.meta.isAdminPage)
-    }
+
   }
 }
 </script>

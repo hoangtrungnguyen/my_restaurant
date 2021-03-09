@@ -33,6 +33,7 @@
                   class="mb-2">
                   <h4><router-link v-bind:to="'/blog/'+blog.id">{{blog.title}} </router-link></h4>
                   <p><small>{{blog.summary ? blog.summary : '...'}}</small></p>
+                  <p>{{blog.time_created | formatTimeCreated }}</p>
                 </b-card>
               </b-col>
             </b-row>
@@ -61,7 +62,6 @@ export default {
   created() {
     blogCollection.get().then(snapshots => {
       this.blogs = snapshots.docs.map(snapshot =>{
-        console.log(snapshot)
         let blog = snapshot.data(Blog)
         blog.id = snapshot.id
         return blog

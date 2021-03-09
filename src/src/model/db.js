@@ -31,6 +31,7 @@ const orderCollection = db.collection('submitted_order')
 const foodCollection = db.collection('food')
 const blogCollection = db.collection('blog')
 const toppingCollection = db.collection('topping')
+const feedBackCollection = db.collection('feed_back')
 
 const actionCodeSettings = {
   // URL you want to redirect back to. The domain (www.example.com) for this
@@ -57,5 +58,6 @@ export {
   orderCollection,
   foodCollection,
   blogCollection,
-  toppingCollection
+  toppingCollection,
+  feedBackCollection
 }

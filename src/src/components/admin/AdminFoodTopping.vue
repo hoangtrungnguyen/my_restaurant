@@ -106,12 +106,38 @@ export default {
     }
   },
   methods: {
+    checkingForm:function(){
+      if(!this.topping_form_data.name){
+        this.$bvToast.toast("Tên không được để trống",{
+          variant: "warning",
+        })
+        return false
+      } else if(!this.topping_form_data.price){
+        this.$bvToast.toast("Giá tiền không được để trống",{
+          variant: "warning",
+        })
+        return false
+      }
+
+      return true
+    },
     createTopping: function () {
+      if(!this.checkingForm()){
+        return
+      }
+
       toppingCollection.doc().set(
-        this.topping_form_data
+        JSON.parse(JSON.stringify(this.topping_form_data),(key, value) => {
+          if(key === 'price'){
+            return parseInt(value)
+          }
+          return value
+        })
       ).then(response => {
         this.topping_form_data = new Topping()
         this.getToppings()
+      }).catch(e =>{
+        console.log(e)
       })
     },
     deleteTopping: function (id) {
@@ -120,6 +146,9 @@ export default {
       })
     },
     updateTopping: function () {
+      if(!this.checkingForm()){
+        return
+      }
       toppingCollection.doc(this.topping_form_data.id).update(
         this.topping_form_data
       ).then(response => {

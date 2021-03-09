@@ -4,6 +4,7 @@ export function Blog() {
   this.image_url = ''
   this.image_name = ''
   this.content = ''
+  this.time_created = new Date()
   // this.time_created = null
   // this.tags = []
 }
